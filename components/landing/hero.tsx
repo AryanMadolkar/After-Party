@@ -1,9 +1,13 @@
 import Link from "next/link";
-import { Show } from "@clerk/nextjs";
+
+import { getCurrentUser } from "@/lib/auth/current-user";
 
 const ARCHIVO: React.CSSProperties = { fontFamily: "var(--font-archivo), sans-serif" };
 
-export function Hero() {
+export async function Hero() {
+  const user = await getCurrentUser();
+  const ctaHref = user ? "/app/new" : "/sign-up";
+
   return (
     <section
       style={{
@@ -54,44 +58,23 @@ export function Hero() {
           carousel, and write the caption.
         </p>
         <div style={{ display: "flex", gap: 14, justifyContent: "flex-end", flexWrap: "wrap" }}>
-          <Show when="signed-out">
-            <Link
-              href="/sign-up"
-              className="ap-flash"
-              style={{
-                background: "var(--ap-pink)",
-                color: "var(--ap-ink)",
-                border: "2px solid var(--ap-ink)",
-                padding: "18px 32px",
-                fontWeight: 800,
-                fontSize: 15,
-                textTransform: "uppercase",
-                cursor: "pointer",
-                textDecoration: "none",
-              }}
-            >
-              create a post →
-            </Link>
-          </Show>
-          <Show when="signed-in">
-            <Link
-              href="/app/new"
-              className="ap-flash"
-              style={{
-                background: "var(--ap-pink)",
-                color: "var(--ap-ink)",
-                border: "2px solid var(--ap-ink)",
-                padding: "18px 32px",
-                fontWeight: 800,
-                fontSize: 15,
-                textTransform: "uppercase",
-                cursor: "pointer",
-                textDecoration: "none",
-              }}
-            >
-              create a post →
-            </Link>
-          </Show>
+          <Link
+            href={ctaHref}
+            className="ap-flash"
+            style={{
+              background: "var(--ap-pink)",
+              color: "var(--ap-ink)",
+              border: "2px solid var(--ap-ink)",
+              padding: "18px 32px",
+              fontWeight: 800,
+              fontSize: 15,
+              textTransform: "uppercase",
+              cursor: "pointer",
+              textDecoration: "none",
+            }}
+          >
+            create a post →
+          </Link>
         </div>
       </div>
     </section>

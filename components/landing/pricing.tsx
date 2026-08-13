@@ -1,7 +1,11 @@
 import Link from "next/link";
-import { Show } from "@clerk/nextjs";
 
-export function Pricing() {
+import { getCurrentUser } from "@/lib/auth/current-user";
+
+export async function Pricing() {
+  const user = await getCurrentUser();
+  const ctaHref = user ? "/app/settings" : "/sign-up";
+
   return (
     <section id="pricing" style={{ padding: "60px 0", borderBottom: "2px solid var(--ap-ink)" }}>
       <h2
@@ -68,46 +72,24 @@ export function Pricing() {
           <p style={{ fontSize: 14, color: "var(--ap-ink-70)", margin: "16px 0 22px", maxWidth: "36ch" }}>
             unlimited projects, higher photo limits, ai editing, caption voice, high-res export.
           </p>
-          <Show when="signed-out">
-            <Link
-              href="/sign-up"
-              className="ap-flash"
-              style={{
-                background: "var(--ap-ink)",
-                color: "var(--ap-paper)",
-                border: "2px solid var(--ap-ink)",
-                padding: "14px 26px",
-                fontWeight: 800,
-                fontSize: 14,
-                textTransform: "uppercase",
-                cursor: "pointer",
-                textDecoration: "none",
-                display: "inline-block",
-              }}
-            >
-              go pro
-            </Link>
-          </Show>
-          <Show when="signed-in">
-            <Link
-              href="/app/settings"
-              className="ap-flash"
-              style={{
-                background: "var(--ap-ink)",
-                color: "var(--ap-paper)",
-                border: "2px solid var(--ap-ink)",
-                padding: "14px 26px",
-                fontWeight: 800,
-                fontSize: 14,
-                textTransform: "uppercase",
-                cursor: "pointer",
-                textDecoration: "none",
-                display: "inline-block",
-              }}
-            >
-              go pro
-            </Link>
-          </Show>
+          <Link
+            href={ctaHref}
+            className="ap-flash"
+            style={{
+              background: "var(--ap-ink)",
+              color: "var(--ap-paper)",
+              border: "2px solid var(--ap-ink)",
+              padding: "14px 26px",
+              fontWeight: 800,
+              fontSize: 14,
+              textTransform: "uppercase",
+              cursor: "pointer",
+              textDecoration: "none",
+              display: "inline-block",
+            }}
+          >
+            go pro
+          </Link>
         </div>
       </div>
     </section>

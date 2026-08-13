@@ -45,6 +45,8 @@ export const captionStyleEnum = pgEnum("caption_style", [
   "none",
 ]);
 
+export const oauthProviderEnum = pgEnum("oauth_provider", ["google", "apple"]);
+
 // ---------------------------------------------------------------------------
 // users
 // ---------------------------------------------------------------------------
@@ -53,16 +55,64 @@ export const users = pgTable(
   "users",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    clerkUserId: text("clerk_user_id").notNull(),
+    email: text("email").notNull(),
+    // Null for accounts created via OAuth that never set a password.
+    passwordHash: text("password_hash"),
     name: text("name"),
-    email: text("email"),
     avatarUrl: text("avatar_url"),
+    emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    uniqueIndex("users_clerk_user_id_idx").on(table.clerkUserId),
+    uniqueIndex("users_email_idx").on(table.email),
     index("users_created_at_idx").on(table.createdAt),
+  ],
+);
+
+/**
+ * Links a user to an external identity (Google/Apple `sub`). A user can
+ * have both a password AND one or more linked OAuth accounts. Accounts are
+ * only auto-linked to an existing user when the provider's ID token claims
+ * email_verified === true for a matching email — see
+ * lib/auth/oauth/link-account.ts.
+ */
+export const oauthAccounts = pgTable(
+  "oauth_accounts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    provider: oauthProviderEnum("provider").notNull(),
+    providerAccountId: text("provider_account_id").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("oauth_accounts_provider_account_idx").on(table.provider, table.providerAccountId),
+    index("oauth_accounts_user_id_idx").on(table.userId),
+  ],
+);
+
+/**
+ * Server-side sessions. The cookie sent to the browser holds the raw
+ * random token; only its SHA-256 hash is stored here, so a database leak
+ * doesn't hand out valid sessions directly. See lib/auth/session.ts.
+ */
+export const sessions = pgTable(
+  "sessions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("sessions_token_hash_idx").on(table.tokenHash),
+    index("sessions_user_id_idx").on(table.userId),
   ],
 );
 
@@ -253,6 +303,16 @@ export const posts = pgTable(
 
 export const usersRelations = relations(users, ({ many }) => ({
   projects: many(projects),
+  oauthAccounts: many(oauthAccounts),
+  sessions: many(sessions),
+}));
+
+export const oauthAccountsRelations = relations(oauthAccounts, ({ one }) => ({
+  user: one(users, { fields: [oauthAccounts.userId], references: [users.id] }),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
 
 export const projectsRelations = relations(projects, ({ one, many }) => ({
@@ -307,6 +367,12 @@ export const postsRelations = relations(posts, ({ one }) => ({
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
+export type OAuthAccount = typeof oauthAccounts.$inferSelect;
+export type NewOAuthAccount = typeof oauthAccounts.$inferInsert;
+
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;
+
 export type Project = typeof projects.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;
 
@@ -331,5 +397,6 @@ export type NewPost = typeof posts.$inferInsert;
 export type ProjectStatus = (typeof projectStatusEnum.enumValues)[number];
 export type SelectionType = (typeof selectionTypeEnum.enumValues)[number];
 export type CaptionStyle = (typeof captionStyleEnum.enumValues)[number];
+export type OAuthProvider = (typeof oauthProviderEnum.enumValues)[number];
 /** A post's type mirrors selection type — see the `posts.type` column comment. */
 export type PostType = SelectionType;

@@ -1,9 +1,12 @@
 import Link from "next/link";
-import { Show } from "@clerk/nextjs";
+
+import { getCurrentUser } from "@/lib/auth/current-user";
 
 const ARCHIVO: React.CSSProperties = { fontFamily: "var(--font-archivo), sans-serif" };
 
-export function MarketingNav() {
+export async function MarketingNav() {
+  const user = await getCurrentUser();
+
   return (
     <nav
       style={{
@@ -63,41 +66,7 @@ export function MarketingNav() {
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <Show when="signed-out">
-          <Link
-            href="/sign-in"
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "var(--ap-ink)",
-              fontWeight: 700,
-              fontSize: 13,
-              textTransform: "uppercase",
-              cursor: "pointer",
-              textDecoration: "none",
-            }}
-          >
-            sign in
-          </Link>
-          <Link
-            href="/sign-up"
-            className="ap-flash"
-            style={{
-              background: "var(--ap-ink)",
-              color: "var(--ap-paper)",
-              border: "2px solid var(--ap-ink)",
-              padding: "10px 22px",
-              fontWeight: 800,
-              fontSize: 13,
-              textTransform: "uppercase",
-              cursor: "pointer",
-              textDecoration: "none",
-            }}
-          >
-            create a post
-          </Link>
-        </Show>
-        <Show when="signed-in">
+        {user ? (
           <Link
             href="/app"
             className="ap-flash"
@@ -115,7 +84,42 @@ export function MarketingNav() {
           >
             go to dashboard
           </Link>
-        </Show>
+        ) : (
+          <>
+            <Link
+              href="/sign-in"
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "var(--ap-ink)",
+                fontWeight: 700,
+                fontSize: 13,
+                textTransform: "uppercase",
+                cursor: "pointer",
+                textDecoration: "none",
+              }}
+            >
+              sign in
+            </Link>
+            <Link
+              href="/sign-up"
+              className="ap-flash"
+              style={{
+                background: "var(--ap-ink)",
+                color: "var(--ap-paper)",
+                border: "2px solid var(--ap-ink)",
+                padding: "10px 22px",
+                fontWeight: 800,
+                fontSize: 13,
+                textTransform: "uppercase",
+                cursor: "pointer",
+                textDecoration: "none",
+              }}
+            >
+              create a post
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );

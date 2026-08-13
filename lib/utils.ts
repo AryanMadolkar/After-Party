@@ -16,6 +16,16 @@ const RELATIVE_TIME_UNITS: Array<[Intl.RelativeTimeFormatUnit, number]> = [
 
 const relativeTimeFormatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" })
 
+export function getInitials(name: string | null, email: string | null): string {
+  if (name) {
+    const parts = name.trim().split(/\s+/).filter(Boolean)
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  }
+  if (email) return email.slice(0, 2).toUpperCase()
+  return "?"
+}
+
 export function formatRelativeTime(date: Date): string {
   const seconds = (date.getTime() - Date.now()) / 1000
   for (const [unit, secondsInUnit] of RELATIVE_TIME_UNITS) {

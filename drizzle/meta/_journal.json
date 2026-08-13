@@ -8,6 +8,20 @@
       "when": 1786541838059,
       "tag": "0000_simple_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786607243826,
+      "tag": "0001_mean_rogue",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786607293364,
+      "tag": "0002_groovy_penance",
+      "breakpoints": true
     }
   ]
 }

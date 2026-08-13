@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Fraunces, Archivo, Onest } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -72,27 +71,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           enableSystem
           disableTransitionOnChange
         >
-          <ClerkProvider
-            signInUrl="/sign-in"
-            signUpUrl="/sign-up"
-            signInFallbackRedirectUrl="/app"
-            signUpFallbackRedirectUrl="/app"
-            appearance={{
-              variables: {
-                colorPrimary: "oklch(0.19 0.006 60)",
-                colorBackground: "oklch(0.995 0.002 75)",
-                colorForeground: "oklch(0.19 0.006 60)",
-                colorMutedForeground: "oklch(0.47 0.007 60)",
-                borderRadius: "0.5rem",
-                fontFamily: "var(--font-sans)",
-              },
-            }}
-          >
-            <TooltipProvider delayDuration={150}>
-              {children}
-              <Toaster position="bottom-right" />
-            </TooltipProvider>
-          </ClerkProvider>
+          <TooltipProvider delayDuration={150}>
+            {children}
+            <Toaster position="bottom-right" />
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -2,10 +2,11 @@ import { requireCurrentUser } from "@/lib/auth/current-user";
 import { AppHeader } from "@/components/dashboard/app-header";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  // Middleware already enforces auth for /app/*; calling this here does
-  // two more things: it syncs the Clerk user into Neon on first access,
-  // and it makes the resolved user available (via React's cache()) to
-  // every server component/action rendered below without a second query.
+  // The proxy (middleware) only checks that a session cookie exists;
+  // this is the authoritative check — it validates the session against
+  // the database and makes the resolved user available (via React's
+  // cache()) to every server component/action rendered below without a
+  // second query.
   await requireCurrentUser();
 
   return (

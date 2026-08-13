@@ -16,7 +16,7 @@ swapped in later without touching any calling code — see [Remaining TODOs](#re
 
 - **Frontend** — Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Lucide icons, Framer Motion
 - **Database** — Neon Postgres + Drizzle ORM
-- **Auth** — Clerk
+- **Auth** — Custom (email/password + Google/Apple OAuth) — see [Authentication](#authentication)
 - **Storage** — Vercel Blob
 - **Validation** — Zod
 
@@ -56,13 +56,14 @@ Open [http://localhost:3000](http://localhost:3000).
 | Variable | Where to get it |
 | --- | --- |
 | `DATABASE_URL` | Neon project dashboard → Connection Details |
-| `CLERK_SECRET_KEY` | Clerk dashboard → API Keys |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk dashboard → API Keys |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google Cloud Console — optional, see below |
+| `APPLE_CLIENT_ID` / `APPLE_TEAM_ID` / `APPLE_KEY_ID` / `APPLE_PRIVATE_KEY` | Apple Developer portal — optional, see below |
 | `BLOB_READ_WRITE_TOKEN` | Vercel project → Storage → Blob |
 | `OPENAI_API_KEY` / `GOOGLE_GENERATIVE_AI_API_KEY` | Prepared for the real AI pipeline — not required yet |
 
-Server-only secrets (`DATABASE_URL`, `CLERK_SECRET_KEY`, `BLOB_READ_WRITE_TOKEN`) are
-validated in `lib/env.ts` and are never imported into client components.
+Server-only secrets are validated in `lib/env.ts` and are never imported into client
+components. Email/password sign-in needs no environment variables at all — it's
+entirely self-contained (see [Authentication](#authentication)).
 
 ### Neon setup
 
@@ -70,13 +71,53 @@ validated in `lib/env.ts` and are never imported into client components.
 2. Copy the pooled connection string into `DATABASE_URL`.
 3. Run `npm run db:migrate`.
 
-### Clerk setup
+## Authentication
 
-1. Create an application at [dashboard.clerk.com](https://dashboard.clerk.com).
-2. Copy the publishable and secret keys into `.env.local`.
-3. This app uses Clerk's default routing — no webhook is required. A user's row in
-   `users` is created lazily on their first authenticated request (see
-   `lib/auth/current-user.ts`).
+There's no third-party auth provider — sign-up, sign-in, sessions, and OAuth are all
+implemented in `lib/auth/`. See the code comments there for the security reasoning
+(password hashing, session token handling, OAuth account linking); the short version:
+
+- **Passwords** are hashed with Node's built-in `scrypt` (`lib/auth/password.ts`) — no
+  extra dependency.
+- **Sessions** are server-side rows in the `sessions` table. The browser only ever
+  holds a random opaque token in an `httpOnly` cookie; the database stores just its
+  SHA-256 hash, so a database leak alone can't produce a usable session
+  (`lib/auth/session.ts`).
+- **Google/Apple ID tokens** are verified against each provider's live JWKS using
+  [`jose`](https://github.com/panva/jose) — the one non-Node-builtin dependency this
+  system uses, and only for that narrow "verify a provider-signed JWT" task.
+- **Not built yet** (foundation-phase scope, same spirit as the mocked AI layer):
+  email verification, password reset, and login rate-limiting. All straightforward
+  additions on top of the current `users`/`sessions` tables — see
+  [Remaining TODOs](#remaining-todos).
+
+### Google OAuth setup (optional)
+
+1. [Google Cloud Console](https://console.cloud.google.com) → APIs & Services →
+   Credentials → **Create OAuth client ID** → Web application.
+2. Add authorized redirect URIs for both environments:
+   `http://localhost:3000/api/auth/google/callback` and
+   `https://yourdomain.com/api/auth/google/callback`.
+3. Copy the client ID and secret into `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
+
+Until these are set, the "continue with google" button redirects back to sign-in with
+a clear error instead of crashing anything else.
+
+### Apple OAuth setup (optional)
+
+Requires a paid Apple Developer Program account.
+
+1. Create an **App ID** with the "Sign In with Apple" capability enabled.
+2. Create a **Services ID** — this is your `APPLE_CLIENT_ID`. Configure its redirect
+   URI as `https://yourdomain.com/api/auth/apple/callback` (Apple requires HTTPS —
+   plain `localhost` won't work for this one; test Apple sign-in against a real HTTPS
+   deployment).
+3. Create a **Sign In with Apple key** (a `.p8` file) under Keys — note its Key ID
+   (`APPLE_KEY_ID`) and your Team ID (`APPLE_TEAM_ID`, top-right of the developer
+   portal).
+4. Set `APPLE_PRIVATE_KEY` to the `.p8` file's contents, with real newlines replaced
+   by literal `\n` (most env var UIs, including Vercel's, don't accept multi-line
+   values directly).
 
 ### Vercel Blob setup
 
@@ -102,7 +143,9 @@ npm run db:studio      # open Drizzle Studio against DATABASE_URL
    one-off deployment step) before the first deploy.
 5. Deploy. `next build` runs automatically.
 
-## Remaining TODOs for the real AI pipeline
+## Remaining TODOs
+
+### AI pipeline
 
 Everything AI-related lives behind interfaces in `lib/ai/*` and currently returns
 deterministic mocked data — nothing else in the app depends on a specific provider.
@@ -117,3 +160,10 @@ deterministic mocked data — nothing else in the app depends on a specific prov
 - [ ] `lib/ai/editor.ts` — generative/AI-driven photo editing
 - [ ] `lib/projects/processing.ts` — move analysis off the request path into a background job/queue (currently runs inline since it's mocked and fast)
 - [ ] Server-side thumbnail generation for formats the browser canvas can't decode
+
+### Auth
+
+- [ ] Email verification (the `email_verified_at` column exists but nothing sets it for password sign-ups)
+- [ ] Password reset flow — needs a transactional email provider
+- [ ] Rate limiting on `signInAction` / `signUpAction` to slow down credential stuffing
+- [ ] A periodic job to delete expired rows from `sessions` (expired sessions are already rejected on lookup — this is just housekeeping)

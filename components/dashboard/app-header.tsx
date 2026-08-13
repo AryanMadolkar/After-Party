@@ -1,7 +1,12 @@
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
 
-export function AppHeader() {
+import { getCurrentUser } from "@/lib/auth/current-user";
+import { getInitials } from "@/lib/utils";
+import { UserMenu } from "@/components/dashboard/user-menu";
+
+export async function AppHeader() {
+  const user = await getCurrentUser();
+
   return (
     <header
       className="ap-scope"
@@ -61,16 +66,7 @@ export function AppHeader() {
         >
           + new project
         </Link>
-        <UserButton
-          userProfileMode="navigation"
-          userProfileUrl="/app/settings"
-          appearance={{
-            elements: {
-              avatarBox:
-                "!size-9 !rounded-full !border-2 !border-[var(--ap-ink)] !bg-[var(--ap-lime)]",
-            },
-          }}
-        />
+        {user && <UserMenu initials={getInitials(user.name, user.email)} email={user.email} />}
       </div>
     </header>
   );
