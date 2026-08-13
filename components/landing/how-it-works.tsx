@@ -1,58 +1,91 @@
-import { PipelineVisual } from "@/components/landing/pipeline-visual";
-
 const STEPS = [
   {
-    title: "Understands your trip",
-    body: "After Party looks at every photo together — not one at a time — to understand the story of your trip or event.",
+    n: "01",
+    title: "reads the whole trip",
+    body: "every photo gets analyzed together, so it understands the story, not just one pic.",
+    color: "var(--ap-lime)",
   },
   {
-    title: "Finds your best shots",
-    body: "Duplicates and near-identical bursts are grouped automatically, and each photo is scored for quality, composition, and sharpness.",
+    n: "02",
+    title: "kills the duplicates",
+    body: "burst shots and repeat selfies get grouped automatically. bye, 12 sunsets.",
+    color: "var(--ap-pink)",
   },
   {
-    title: "Builds the post for you",
-    body: "Carousels, photo dumps, and stories are assembled from your strongest photos — ready to reorder or fine-tune.",
+    n: "03",
+    title: "builds the post",
+    body: "pick a format and it assembles the sequence from your strongest shots.",
+    color: "var(--ap-lime)",
   },
   {
-    title: "Finishes the look",
-    body: "Captions and song recommendations are generated to match the mood, with editing tools to polish the final frame.",
+    n: "04",
+    title: "finishes the vibe",
+    body: "caption and a song pick, generated to match the mood. edit before you post.",
+    color: "var(--ap-pink)",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="border-t border-border/60 bg-secondary/40">
-      <div className="mx-auto max-w-6xl px-6 py-24">
-        <div className="grid gap-16 lg:grid-cols-2 lg:gap-12">
-          <div>
-            <p className="text-sm font-medium tracking-wide text-muted-foreground">
-              How it works
+    <section id="how-it-works" style={{ padding: "60px 0", borderBottom: "2px solid var(--ap-ink)" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+          flexWrap: "wrap",
+          gap: 12,
+          marginBottom: 36,
+        }}
+      >
+        <h2
+          style={{
+            fontFamily: "var(--font-archivo), sans-serif",
+            fontWeight: 900,
+            fontSize: "clamp(28px,3.6vw,46px)",
+            letterSpacing: "-0.01em",
+            margin: 0,
+            textTransform: "uppercase",
+          }}
+        >
+          how it works
+        </h2>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ap-ink-50)", textTransform: "uppercase" }}>
+          01 → 04
+        </span>
+      </div>
+      <div>
+        {STEPS.map((step) => (
+          <div
+            key={step.n}
+            className="ap-row"
+            style={{
+              display: "flex",
+              gap: 32,
+              alignItems: "baseline",
+              padding: "24px 0",
+              borderTop: "1.5px solid var(--ap-ink)",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "var(--font-archivo), sans-serif",
+                fontWeight: 900,
+                fontSize: 16,
+                background: step.color,
+                padding: "2px 8px",
+                minWidth: 20,
+                textAlign: "center",
+              }}
+            >
+              {step.n}
+            </span>
+            <h3 style={{ fontWeight: 700, fontSize: 20, margin: 0, minWidth: 260 }}>{step.title}</h3>
+            <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--ap-ink-70)", margin: 0, maxWidth: "52ch" }}>
+              {step.body}
             </p>
-            <h2 className="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">
-              From camera roll to caption, in one pass.
-            </h2>
-
-            <ol className="mt-10 space-y-8">
-              {STEPS.map((step, i) => (
-                <li key={step.title} className="flex gap-5">
-                  <span className="font-serif text-lg text-muted-foreground/60">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <h3 className="font-medium">{step.title}</h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                      {step.body}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
           </div>
-
-          <div className="flex items-center justify-center rounded-xl border border-border/60 bg-background py-16">
-            <PipelineVisual />
-          </div>
-        </div>
+        ))}
       </div>
     </section>
   );

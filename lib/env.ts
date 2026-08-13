@@ -23,25 +23,45 @@ const publicEnvSchema = z.object({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1, "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is required"),
 });
 
-function loadServerEnv() {
-  const parsed = serverEnvSchema.safeParse(process.env);
+function validate<T extends z.ZodTypeAny>(
+  schema: T,
+  source: Record<string, unknown>,
+  label: string,
+): z.infer<T> {
+  const parsed = schema.safeParse(source);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((issue) => `  - ${issue.path.join(".")}: ${issue.message}`).join("\n");
-    throw new Error(`Invalid server environment variables:\n${issues}`);
+    throw new Error(`Invalid ${label} environment variables:\n${issues}`);
   }
   return parsed.data;
 }
 
-function loadPublicEnv() {
-  const parsed = publicEnvSchema.safeParse({
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+/**
+ * Lazily validates and caches on first property access, rather than at
+ * module import time. This matters: Next.js's build step imports every
+ * route module (to inspect config like `runtime`) without invoking it, so
+ * eager top-level validation would fail the entire build the moment a
+ * secret is missing — even for routes that don't touch it, and even for
+ * preview deployments that legitimately don't have every secret configured.
+ * Deferring validation to first *use* keeps `next build` decoupled from
+ * "is every production secret filled in yet".
+ */
+function lazy<T extends object>(load: () => T): T {
+  let cached: T | null = null;
+  return new Proxy({} as T, {
+    get(_target, prop, receiver) {
+      if (!cached) cached = load();
+      return Reflect.get(cached, prop, receiver);
+    },
   });
-  if (!parsed.success) {
-    const issues = parsed.error.issues.map((issue) => `  - ${issue.path.join(".")}: ${issue.message}`).join("\n");
-    throw new Error(`Invalid public environment variables:\n${issues}`);
-  }
-  return parsed.data;
 }
 
-export const serverEnv = loadServerEnv();
-export const publicEnv = loadPublicEnv();
+export const serverEnv = lazy(() => validate(serverEnvSchema, process.env, "server"));
+
+export const publicEnv = lazy(() =>
+  validate(
+    publicEnvSchema,
+    { NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY },
+    "public",
+  ),
+);

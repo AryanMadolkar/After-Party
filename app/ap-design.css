@@ -1,0 +1,169 @@
+/*
+ * Design system for the "After Party" landing/auth/dashboard handoff.
+ * Scoped under .ap-scope everywhere on purpose — this is a deliberately
+ * different, bolder visual language (flat ink/paper/lime/pink, hard 2px
+ * borders, zero radius) than the rest of the app (project/photo editor
+ * screens), which weren't part of this design handoff. Scoping keeps this
+ * from leaking into those screens' shadcn-based styling.
+ */
+
+.ap-scope {
+  --ap-paper: #f5f3ec;
+  --ap-ink: #0a0a0a;
+  --ap-ink-70: #3a3a38;
+  --ap-ink-50: #5a5850;
+  --ap-lime: #a6e100;
+  --ap-pink: #ff3ea5;
+  --ap-sand: #e9e6db;
+  font-family: var(--font-onest), sans-serif;
+  background: var(--ap-paper);
+  color: var(--ap-ink);
+  text-wrap: pretty;
+}
+
+.ap-scope a {
+  color: var(--ap-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--ap-lime);
+  text-underline-offset: 3px;
+}
+
+.ap-scope a:hover {
+  color: var(--ap-pink);
+  text-decoration-color: var(--ap-pink);
+}
+
+.ap-scope details > summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.ap-scope details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ap-flash:hover {
+  background: var(--ap-ink) !important;
+  color: var(--ap-paper) !important;
+}
+
+.ap-row:hover {
+  background: rgba(10, 10, 10, 0.03);
+}
+
+@keyframes ap-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ap-marquee {
+  display: flex;
+  width: max-content;
+  animation: ap-marquee 24s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ap-marquee {
+    animation: none;
+  }
+}
+
+.ap-sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 2px solid var(--ap-ink);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ap-tile:hover .ap-react {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ap-react {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.ap-scope) {
+    scroll-behavior: auto;
+  }
+}
+
+html:has(.ap-scope) {
+  scroll-behavior: smooth;
+}
+
+/* The design handoff's two-panel auth layout is specified for desktop only
+   (a fixed 1fr/1fr grid). Collapsing to a single column below ~860px keeps
+   the sign-in/sign-up form usable on phones instead of squeezing the photo
+   collage and the form into unreadable slivers. */
+.ap-auth-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 0;
+}
+
+@media (max-width: 860px) {
+  .ap-auth-grid {
+    grid-template-columns: 1fr;
+  }
+  .ap-auth-collage {
+    display: none;
+  }
+}
+
+/* Dashboard project grid: 4 columns on desktop per the design, stepping
+   down responsively (the handoff's raw repeat(4,1fr) doesn't specify a
+   mobile fallback). */
+.ap-project-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 640px) {
+  .ap-project-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ap-project-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Same story for the landing page's fixed repeat(4,1fr) grids (stat bar,
+   photo strip, "pick your vibe" modes) and the hero's 2-column row — the
+   handoff is a desktop-fidelity spec with no stated mobile fallback. */
+.ap-grid-4 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 720px) {
+  .ap-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.ap-hero-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .ap-hero-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

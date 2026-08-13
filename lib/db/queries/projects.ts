@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cache } from "react";
-import { and, asc, count, desc, eq, inArray } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { photos, posts, projects, type Project } from "@/db/schema";
@@ -78,4 +78,43 @@ export async function listProjectsWithStatsForUser(userId: string): Promise<Proj
     postCount: postCountByProject.get(project.id) ?? 0,
     coverThumbnailUrl: coverByProject.get(project.id) ?? null,
   }));
+}
+
+export type DashboardStats = {
+  activeProjects: number;
+  photosAnalyzed: number;
+  posts: number;
+  songsPicked: number;
+};
+
+/**
+ * Aggregate counters for the dashboard's stat strip. All scoped to the
+ * authenticated user via joins/where clauses — never derived from
+ * client-supplied ids.
+ */
+export async function getDashboardStats(userId: string): Promise<DashboardStats> {
+  const [[projectRow], [postRow]] = await Promise.all([
+    db
+      .select({
+        activeProjects: count(),
+        photosAnalyzed: sql<number>`coalesce(sum(${projects.photoCount}) filter (where ${projects.status} = 'ready'), 0)::int`,
+      })
+      .from(projects)
+      .where(eq(projects.userId, userId)),
+    db
+      .select({
+        posts: count(),
+        songsPicked: count(sql`case when ${posts.songName} is not null then 1 end`),
+      })
+      .from(posts)
+      .innerJoin(projects, eq(posts.projectId, projects.id))
+      .where(eq(projects.userId, userId)),
+  ]);
+
+  return {
+    activeProjects: projectRow?.activeProjects ?? 0,
+    photosAnalyzed: projectRow?.photosAnalyzed ?? 0,
+    posts: postRow?.posts ?? 0,
+    songsPicked: postRow?.songsPicked ?? 0,
+  };
 }

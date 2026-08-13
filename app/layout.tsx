@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces, Archivo, Onest } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
+import "./ap-design.css";
 
 const fontSans = Geist({
   variable: "--font-sans",
@@ -23,6 +24,22 @@ const fontSerif = Fraunces({
   subsets: ["latin"],
   style: ["normal", "italic"],
   axes: ["opsz", "SOFT", "WONK"],
+});
+
+// Used only within the ".ap-scope" design system (marketing, auth, and
+// dashboard screens) — see app/ap-design.css. Added alongside the existing
+// fonts rather than replacing them so the rest of the app (project/editor
+// screens, not covered by this design handoff) is unaffected.
+const fontArchivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+  weight: ["500", "700", "900"],
+});
+
+const fontOnest = Onest({
+  variable: "--font-onest",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -46,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${fontSans.variable} ${fontMono.variable} ${fontSerif.variable} h-full antialiased`}
+      className={`${fontSans.variable} ${fontMono.variable} ${fontSerif.variable} ${fontArchivo.variable} ${fontOnest.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider

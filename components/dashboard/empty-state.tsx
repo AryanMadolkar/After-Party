@@ -1,20 +1,51 @@
 import Link from "next/link";
-import { Camera } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 
 export function DashboardEmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-28 text-center">
-      <Camera className="size-8 text-muted-foreground/50" strokeWidth={1.25} />
-      <h2 className="mt-6 font-serif text-2xl tracking-tight">Your next post starts here.</h2>
-      <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        border: "2px solid var(--ap-ink)",
+        padding: "112px 24px",
+        textAlign: "center",
+      }}
+    >
+      <h2
+        style={{
+          fontFamily: "var(--font-archivo), sans-serif",
+          fontWeight: 900,
+          fontSize: "clamp(28px,4vw,40px)",
+          margin: 0,
+          textTransform: "uppercase",
+        }}
+      >
+        your next post starts here
+      </h2>
+      <p style={{ marginTop: 10, maxWidth: "40ch", fontSize: 14, color: "var(--ap-ink-70)" }}>
         Upload the photos from your trip or event and After Party will find the ones worth
         posting.
       </p>
-      <Button asChild size="lg" className="mt-8 rounded-full px-6">
-        <Link href="/app/new">Create a project</Link>
-      </Button>
+      <Link
+        href="/app/new"
+        className="ap-flash"
+        style={{
+          marginTop: 28,
+          background: "var(--ap-lime)",
+          color: "var(--ap-ink)",
+          border: "2px solid var(--ap-ink)",
+          padding: "15px 28px",
+          fontWeight: 800,
+          fontSize: 13,
+          textTransform: "uppercase",
+          cursor: "pointer",
+          textDecoration: "none",
+        }}
+      >
+        create a project
+      </Link>
     </div>
   );
 }
