@@ -1,5 +1,5 @@
 import { PhotoTile } from "@/components/landing/photo-tile";
-import { pickLooks } from "@/lib/landing/photo-palette";
+import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
 
 const CAROUSEL_LOOKS = pickLooks(4, 4);
 const DUMP_LOOKS = pickLooks(7, 12);
@@ -29,7 +29,13 @@ export function PhotoDumpSection() {
           </p>
           <div style={{ display: "flex", gap: 6 }}>
             {CAROUSEL_LOOKS.map((look) => (
-              <PhotoTile key={look.id} tone={look.tone} aspect="4/5" style={{ flex: 1 }} />
+              <PhotoTile
+                key={look.id}
+                tone={look.tone}
+                src={photoUrl(look.photoSeed, 400, 500)}
+                aspect="4/5"
+                style={{ flex: 1 }}
+              />
             ))}
           </div>
         </div>
@@ -43,6 +49,7 @@ export function PhotoDumpSection() {
               <PhotoTile
                 key={look.id}
                 tone={look.tone}
+                src={photoUrl(look.photoSeed, 300, 400)}
                 aspect={i % 3 === 0 ? "1/1" : i % 2 === 0 ? "3/4" : "4/5"}
                 rotate={(i % 5) - 2}
                 blurred={i === 2}

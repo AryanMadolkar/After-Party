@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Reorder } from "framer-motion";
 
 import { PhotoTile } from "@/components/landing/photo-tile";
-import { pickLooks } from "@/lib/landing/photo-palette";
+import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
 
 const ROLES = ["Hero", "Candid", "Detail", "Candid", "Detail", "Candid", "Detail", "Closing shot"];
 
@@ -64,7 +64,12 @@ export function CarouselBuilderSection() {
             whileDrag={{ scale: 1.04, zIndex: 5, boxShadow: "0 16px 32px rgba(0,0,0,0.2)" }}
             style={{ flexShrink: 0, cursor: "grab" }}
           >
-            <PhotoTile tone={item.tone} aspect="4/5" style={{ width: "min(30vw, 190px)" }}>
+            <PhotoTile
+              tone={item.tone}
+              src={photoUrl(item.photoSeed, 400, 500)}
+              aspect="4/5"
+              style={{ width: "min(30vw, 190px)" }}
+            >
               <span
                 style={{
                   position: "absolute",

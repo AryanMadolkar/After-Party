@@ -1,5 +1,5 @@
 import { PhotoTile } from "@/components/landing/photo-tile";
-import { pickLooks } from "@/lib/landing/photo-palette";
+import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
 
 const TRAITS = ["Candid photos", "Dark tones", "Film colors", "Minimal captions"];
 const SAMPLE = pickLooks(4, 20);
@@ -65,6 +65,7 @@ export function TasteSection() {
             <PhotoTile
               key={look.id}
               tone={look.tone}
+              src={photoUrl(look.photoSeed, 350, 465)}
               aspect="3/4"
               style={{ flex: 1, filter: "sepia(0.15) contrast(1.05) saturate(0.85)" }}
             />

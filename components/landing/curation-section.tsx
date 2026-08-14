@@ -1,5 +1,5 @@
 import { PhotoTile } from "@/components/landing/photo-tile";
-import { pickLooks } from "@/lib/landing/photo-palette";
+import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
 
 const CONTEXT_TAGS = ["Eiffel Tower", "You", "Friends", "Café", "Street", "Dinner", "Night"];
 
@@ -74,6 +74,7 @@ export function CurationSection() {
               <PhotoTile
                 key={look.id}
                 tone={look.tone}
+                src={photoUrl(look.photoSeed, 400, 500)}
                 aspect="4/5"
                 style={{ width: "min(20vw, 130px)", flexShrink: 0 }}
               >

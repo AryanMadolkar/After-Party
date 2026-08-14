@@ -4,11 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView, AnimatePresence, MotionConfig } from "framer-motion";
 
 import { PhotoTile } from "@/components/landing/photo-tile";
-import { pickLooks } from "@/lib/landing/photo-palette";
+import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
 
 const SCREENSHOT_TONE = "linear-gradient(160deg,#f2f1ea,#d8d5c8)";
 
-type Tile = { id: string; tone: string; keep: boolean; rotate: number; blurred?: boolean };
+type Tile = {
+  id: string;
+  tone: string;
+  src?: string;
+  keep: boolean;
+  rotate: number;
+  blurred?: boolean;
+};
 
 const looks = pickLooks(42, 3);
 const TILES: Tile[] = looks.map((look, i) => {
@@ -17,7 +24,10 @@ const TILES: Tile[] = looks.map((look, i) => {
   const isReject = !isScreenshot && i % 3 === 0;
   return {
     id: `p-${i}`,
+    // Screenshots stay a flat placeholder — a real photo behind them
+    // would undercut the "this one's not even a photo" point.
     tone: isScreenshot ? SCREENSHOT_TONE : look.tone,
+    src: isScreenshot ? undefined : photoUrl(look.photoSeed, 160, 160),
     keep: !isScreenshot && !isReject,
     rotate: (i % 7) - 3,
     blurred: isReject && i % 2 === 0,
@@ -72,6 +82,7 @@ export function ProblemSection() {
                   key={tile.id}
                   layout
                   tone={tile.tone}
+                  src={tile.src}
                   aspect="1/1"
                   rotate={cleaned ? 0 : tile.rotate}
                   blurred={tile.blurred && !cleaned}

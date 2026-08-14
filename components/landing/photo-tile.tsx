@@ -1,11 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import { motion, type HTMLMotionProps } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 
 type PhotoTileProps = Omit<HTMLMotionProps<"div">, "children"> & {
   tone: string;
+  src?: string;
+  alt?: string;
   aspect?: string;
   blurred?: boolean;
   flash?: boolean;
@@ -15,13 +18,17 @@ type PhotoTileProps = Omit<HTMLMotionProps<"div">, "children"> & {
 };
 
 /**
- * A single placeholder "photo" — a duotone gradient standing in for real
- * photography (see lib/landing/photo-palette.ts). Deliberately imperfect
- * by default (slight rotation, optional blur/flash) so a grid of these
- * reads as a real camera roll, not a tidy design-system swatch set.
+ * A single "photo" tile. `tone` (a duotone gradient) is always the
+ * background — shown while `src` loads and as a fallback if it fails.
+ * `src`, when given, is a real placeholder photograph (see
+ * lib/landing/photo-palette.ts) layered on top. Deliberately imperfect by
+ * default (slight rotation, optional blur/flash) so a grid of these reads
+ * as a real camera roll, not a tidy design-system swatch set.
  */
 export function PhotoTile({
   tone,
+  src,
+  alt = "",
   aspect = "4/5",
   blurred = false,
   flash = false,
@@ -45,6 +52,15 @@ export function PhotoTile({
       }}
       {...props}
     >
+      {src && (
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes="(min-width: 1024px) 220px, 30vw"
+          style={{ objectFit: "cover" }}
+        />
+      )}
       {flash && (
         <div
           style={{

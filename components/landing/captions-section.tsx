@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { PhotoTile } from "@/components/landing/photo-tile";
-import { pickLooks } from "@/lib/landing/photo-palette";
+import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
 
 const STYLES = [
   { label: "minimal", text: "tokyo lately." },
@@ -35,7 +35,12 @@ export function CaptionsSection() {
       </h2>
 
       <div className="ap-hero-grid" style={{ display: "grid", gap: 32, alignItems: "center" }}>
-        <PhotoTile tone={PHOTO.tone} aspect="4/5" style={{ maxWidth: 360 }} />
+        <PhotoTile
+          tone={PHOTO.tone}
+          src={photoUrl(PHOTO.photoSeed, 500, 625)}
+          aspect="4/5"
+          style={{ maxWidth: 360 }}
+        />
 
         <div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { PhotoTile } from "@/components/landing/photo-tile";
-import { pickLooks } from "@/lib/landing/photo-palette";
+import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
 
 const BASE = pickLooks(4, 18);
 
@@ -72,7 +72,12 @@ export function EditingSection() {
           <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: "var(--ap-ink-50)", margin: "0 0 10px" }}>
             before
           </p>
-          <PhotoTile tone={photo.tone} aspect="4/5" style={{ filter: beforeFilter, maxWidth: 320 }}>
+          <PhotoTile
+            tone={photo.tone}
+            src={photoUrl(photo.photoSeed, 500, 625)}
+            aspect="4/5"
+            style={{ filter: beforeFilter, maxWidth: 320 }}
+          >
             {example.type === "object" && (
               <div
                 style={{
@@ -92,7 +97,12 @@ export function EditingSection() {
           <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: "var(--ap-ink-50)", margin: "0 0 10px" }}>
             after
           </p>
-          <PhotoTile tone={photo.tone} aspect="4/5" style={{ filter: afterFilter, maxWidth: 320 }} />
+          <PhotoTile
+            tone={photo.tone}
+            src={photoUrl(photo.photoSeed, 500, 625)}
+            aspect="4/5"
+            style={{ filter: afterFilter, maxWidth: 320 }}
+          />
         </div>
       </div>
     </section>

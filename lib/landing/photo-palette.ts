@@ -1,12 +1,14 @@
 /**
- * Placeholder "photo" looks for the landing page's photo-driven sections.
- * There's no real photography wired in yet — these are duotone gradients
- * tuned to read as camera-roll variety (warm sunset, flash-lit night,
- * daylight portrait, food, city, film-faded) rather than a single flat
- * brand gradient repeated everywhere.
+ * Placeholder photography for the landing page's photo-driven sections.
+ * Real images come from Lorem Picsum (a purpose-built placeholder-photo
+ * service backed by Unsplash — free, no key, deterministic per seed) so
+ * every tile shows an actual photograph instead of empty gradient space.
+ * The duotone `tone` gradient is kept as the loading/fallback background
+ * (shown briefly while the image decodes, or if it fails to load).
  *
- * Swap for real photography by giving PhotoTile a `src` prop later — the
- * component/layout code doesn't need to change, only this data source.
+ * Swap for real user/marketing photography later by changing `photoUrl`
+ * to build URLs from real assets — PhotoTile's `src` prop and every call
+ * site stay the same.
  */
 export type PhotoKind =
   | "landscape"
@@ -20,9 +22,11 @@ export type PhotoKind =
 
 export type PhotoLook = {
   id: string;
-  tone: string; // CSS gradient
+  tone: string; // CSS gradient — loading/fallback background
   kind: PhotoKind;
 };
+
+export type PickedLook = PhotoLook & { photoSeed: string };
 
 export const PHOTO_LOOKS: PhotoLook[] = [
   { id: "sunset-1", tone: "linear-gradient(160deg,#e8b06b,#c96a3f 55%,#7a3d2e)", kind: "landscape" },
@@ -51,10 +55,22 @@ export const PHOTO_LOOKS: PhotoLook[] = [
   { id: "candid-2", tone: "linear-gradient(150deg,#cfc2b0,#95836c 55%,#544636)", kind: "candid" },
 ];
 
-export function pickLooks(count: number, seed = 0): PhotoLook[] {
-  const out: PhotoLook[] = [];
+/** Deterministic placeholder photo URL — same seed always returns the same image. */
+export function photoUrl(seed: string, width = 600, height = 750): string {
+  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${width}/${height}`;
+}
+
+/**
+ * Picks `count` looks starting at `seed`, each tagged with a globally
+ * unique `photoSeed` (look id + call-site seed + index) so different
+ * sections don't all show the same handful of placeholder photos even
+ * when they reuse the same tone/kind combinations.
+ */
+export function pickLooks(count: number, seed = 0): PickedLook[] {
+  const out: PickedLook[] = [];
   for (let i = 0; i < count; i++) {
-    out.push(PHOTO_LOOKS[(i + seed) % PHOTO_LOOKS.length]);
+    const look = PHOTO_LOOKS[(i + seed) % PHOTO_LOOKS.length];
+    out.push({ ...look, photoSeed: `${look.id}-s${seed}-${i}` });
   }
   return out;
 }
