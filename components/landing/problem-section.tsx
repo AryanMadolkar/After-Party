@@ -27,7 +27,7 @@ const TILES: Tile[] = looks.map((look, i) => {
     // Screenshots stay a flat placeholder — a real photo behind them
     // would undercut the "this one's not even a photo" point.
     tone: isScreenshot ? SCREENSHOT_TONE : look.tone,
-    src: isScreenshot ? undefined : photoUrl(look.photoSeed, 160, 160),
+    src: isScreenshot ? undefined : photoUrl(look.keyword, look.lock, 160, 160),
     keep: !isScreenshot && !isReject,
     rotate: (i % 7) - 3,
     blurred: isReject && i % 2 === 0,

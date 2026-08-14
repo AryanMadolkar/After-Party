@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { PhotoTile } from "@/components/landing/photo-tile";
-import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
+import { PHOTO_LOOKS, photoUrl } from "@/lib/landing/photo-palette";
 
 const STYLES = [
   { label: "minimal", text: "tokyo lately." },
@@ -13,7 +13,9 @@ const STYLES = [
   { label: "no caption", text: "—" },
 ] as const;
 
-const PHOTO = pickLooks(1, 15)[0];
+// The caption reads "tokyo lately." — the photo should actually be Tokyo.
+const PHOTO_TONE = PHOTO_LOOKS.find((l) => l.id === "night-neon")!.tone;
+const PHOTO_SRC = photoUrl("tokyo", 7, 500, 625);
 
 export function CaptionsSection() {
   const [active, setActive] = useState(0);
@@ -35,12 +37,7 @@ export function CaptionsSection() {
       </h2>
 
       <div className="ap-hero-grid" style={{ display: "grid", gap: 32, alignItems: "center" }}>
-        <PhotoTile
-          tone={PHOTO.tone}
-          src={photoUrl(PHOTO.photoSeed, 500, 625)}
-          aspect="4/5"
-          style={{ maxWidth: 360 }}
-        />
+        <PhotoTile tone={PHOTO_TONE} src={PHOTO_SRC} aspect="4/5" style={{ maxWidth: 360 }} />
 
         <div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>

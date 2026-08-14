@@ -1,8 +1,19 @@
 import { PhotoTile } from "@/components/landing/photo-tile";
-import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
+import { PHOTO_LOOKS, photoUrl } from "@/lib/landing/photo-palette";
 
 const TRAITS = ["Candid photos", "Dark tones", "Film colors", "Minimal captions"];
-const SAMPLE = pickLooks(4, 20);
+
+const toneOf = (id: string) => PHOTO_LOOKS.find((l) => l.id === id)?.tone ?? PHOTO_LOOKS[0].tone;
+
+// One sample photo per trait, in order, so the row actually embodies the
+// four traits listed above it — a candid people shot, a dark night shot,
+// a vintage-toned shot, and a clean travel frame.
+const SAMPLE = [
+  { id: "s1", keyword: "people", tone: toneOf("candid-1"), lock: 41 },
+  { id: "s2", keyword: "night", tone: toneOf("night-flash"), lock: 52 },
+  { id: "s3", keyword: "vintage", tone: toneOf("film-fade"), lock: 63 },
+  { id: "s4", keyword: "travel", tone: toneOf("beach"), lock: 74 },
+];
 
 export function TasteSection() {
   return (
@@ -65,7 +76,7 @@ export function TasteSection() {
             <PhotoTile
               key={look.id}
               tone={look.tone}
-              src={photoUrl(look.photoSeed, 350, 465)}
+              src={photoUrl(look.keyword, look.lock, 350, 465)}
               aspect="3/4"
               style={{ flex: 1, filter: "sepia(0.15) contrast(1.05) saturate(0.85)" }}
             />

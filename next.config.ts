@@ -12,11 +12,7 @@ const nextConfig: NextConfig = {
         // lib/landing/photo-palette.ts. Not used anywhere real user
         // photos are involved.
         protocol: "https",
-        hostname: "picsum.photos",
-      },
-      {
-        protocol: "https",
-        hostname: "fastly.picsum.photos",
+        hostname: "loremflickr.com",
       },
     ],
   },

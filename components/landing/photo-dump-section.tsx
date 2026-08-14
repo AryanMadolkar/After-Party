@@ -32,7 +32,7 @@ export function PhotoDumpSection() {
               <PhotoTile
                 key={look.id}
                 tone={look.tone}
-                src={photoUrl(look.photoSeed, 400, 500)}
+                src={photoUrl(look.keyword, look.lock, 400, 500)}
                 aspect="4/5"
                 style={{ flex: 1 }}
               />
@@ -49,7 +49,7 @@ export function PhotoDumpSection() {
               <PhotoTile
                 key={look.id}
                 tone={look.tone}
-                src={photoUrl(look.photoSeed, 300, 400)}
+                src={photoUrl(look.keyword, look.lock, 300, 400)}
                 aspect={i % 3 === 0 ? "1/1" : i % 2 === 0 ? "3/4" : "4/5"}
                 rotate={(i % 5) - 2}
                 blurred={i === 2}

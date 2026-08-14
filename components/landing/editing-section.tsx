@@ -3,21 +3,25 @@
 import { useState } from "react";
 
 import { PhotoTile } from "@/components/landing/photo-tile";
-import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
+import { PHOTO_LOOKS, photoUrl } from "@/lib/landing/photo-palette";
 
-const BASE = pickLooks(4, 18);
+const toneOf = (id: string) => PHOTO_LOOKS.find((l) => l.id === id)?.tone ?? PHOTO_LOOKS[0].tone;
 
+// Each example's photo actually supports its prompt: a people scene for
+// "remove the guy in the background" (so the fake overlay reads as a
+// person), a night shot for "fix the lighting" (something worth fixing),
+// a street scene for "remove the trash can".
 const EXAMPLES = [
-  { prompt: "Remove the guy in the background.", type: "object" },
-  { prompt: "Make this look like film.", type: "film" },
-  { prompt: "Fix the lighting.", type: "light" },
-  { prompt: "Remove the trash can.", type: "object" },
+  { prompt: "Remove the guy in the background.", type: "object", keyword: "friends", tone: "friends-1", lock: 16 },
+  { prompt: "Make this look like film.", type: "film", keyword: "travel", tone: "beach", lock: 23 },
+  { prompt: "Fix the lighting.", type: "light", keyword: "night", tone: "night-bar", lock: 31 },
+  { prompt: "Remove the trash can.", type: "object", keyword: "street", tone: "street", lock: 44 },
 ] as const;
 
 export function EditingSection() {
   const [active, setActive] = useState(0);
   const example = EXAMPLES[active];
-  const photo = BASE[active];
+  const photo = { tone: toneOf(example.tone), src: photoUrl(example.keyword, example.lock, 500, 625) };
 
   const afterFilter =
     example.type === "film"
@@ -74,7 +78,7 @@ export function EditingSection() {
           </p>
           <PhotoTile
             tone={photo.tone}
-            src={photoUrl(photo.photoSeed, 500, 625)}
+            src={photo.src}
             aspect="4/5"
             style={{ filter: beforeFilter, maxWidth: 320 }}
           >
@@ -99,7 +103,7 @@ export function EditingSection() {
           </p>
           <PhotoTile
             tone={photo.tone}
-            src={photoUrl(photo.photoSeed, 500, 625)}
+            src={photo.src}
             aspect="4/5"
             style={{ filter: afterFilter, maxWidth: 320 }}
           />

@@ -4,11 +4,24 @@ import { useState } from "react";
 import { Reorder } from "framer-motion";
 
 import { PhotoTile } from "@/components/landing/photo-tile";
-import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
+import { PHOTO_LOOKS, photoUrl } from "@/lib/landing/photo-palette";
 
-const ROLES = ["Hero", "Candid", "Detail", "Candid", "Detail", "Candid", "Detail", "Closing shot"];
+// A believable Tokyo-trip arc: establishing shot, people, food, street,
+// closing sunset — not just 8 random travel-ish photos.
+const ITEMS = [
+  { id: "t1", role: "Hero", keyword: "tokyo", tone: "city-dusk", lock: 21 },
+  { id: "t2", role: "Candid", keyword: "friends", tone: "friends-2", lock: 14 },
+  { id: "t3", role: "Detail", keyword: "food", tone: "food-1", lock: 33 },
+  { id: "t4", role: "Candid", keyword: "people", tone: "candid-1", lock: 8 },
+  { id: "t5", role: "Detail", keyword: "architecture", tone: "detail-1", lock: 19 },
+  { id: "t6", role: "Candid", keyword: "street", tone: "street", lock: 27 },
+  { id: "t7", role: "Detail", keyword: "coffee", tone: "cafe", lock: 5 },
+  { id: "t8", role: "Closing shot", keyword: "sunset", tone: "sunset-2", lock: 12 },
+];
 
-const INITIAL = pickLooks(8, 2).map((look, i) => ({ ...look, role: ROLES[i] }));
+const toneOf = (id: string) => PHOTO_LOOKS.find((l) => l.id === id)?.tone ?? PHOTO_LOOKS[0].tone;
+
+const INITIAL = ITEMS.map((item) => ({ ...item, tone: toneOf(item.tone) }));
 
 export function CarouselBuilderSection() {
   const [items, setItems] = useState(INITIAL);
@@ -66,7 +79,7 @@ export function CarouselBuilderSection() {
           >
             <PhotoTile
               tone={item.tone}
-              src={photoUrl(item.photoSeed, 400, 500)}
+              src={photoUrl(item.keyword, item.lock, 400, 500)}
               aspect="4/5"
               style={{ width: "min(30vw, 190px)" }}
             >
