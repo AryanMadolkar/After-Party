@@ -1,17 +1,23 @@
 import { PhotoTile } from "@/components/landing/photo-tile";
 import { PHOTO_LOOKS, photoUrl } from "@/lib/landing/photo-palette";
 
-// Each tag pairs with a photo whose actual content matches it — the
-// carousel below badges each tile with its tag, so the match has to be
-// exact, not just "a travel-ish photo."
-const MOMENTS = [
-  { tag: "Eiffel Tower", keyword: "paris", tone: "city-dusk", lock: 4 },
-  { tag: "You", keyword: "portrait", tone: "portrait-1", lock: 11 },
-  { tag: "Friends", keyword: "friends", tone: "friends-1", lock: 6 },
-  { tag: "Café", keyword: "coffee", tone: "cafe", lock: 2 },
-  { tag: "Street", keyword: "street", tone: "street", lock: 9 },
-  { tag: "Dinner", keyword: "dinner", tone: "food-2", lock: 3 },
-  { tag: "Night", keyword: "night", tone: "night-bar", lock: 5 },
+// The tag list communicates "here's the context AI reads" on its own —
+// the photo carousel doesn't need to claim each tile IS that exact tag.
+// (It did, via a per-tile badge, and it looked broken: Flickr tags are
+// noisy user data, so "portrait" surfaces pet photos and "paris" surfaces
+// street art as often as landmarks. A loosely-matched, unlabeled trip
+// carousel reads as intentional; a wrong, explicitly-labeled one reads as
+// broken.)
+const TAGS = ["Eiffel Tower", "You", "Friends", "Café", "Street", "Dinner", "Night"];
+
+const CAROUSEL = [
+  { id: "c1", keyword: "paris", tone: "city-dusk", lock: 4 },
+  { id: "c2", keyword: "smile", tone: "portrait-1", lock: 18 },
+  { id: "c3", keyword: "friends", tone: "friends-1", lock: 6 },
+  { id: "c4", keyword: "coffee", tone: "cafe", lock: 2 },
+  { id: "c5", keyword: "street", tone: "street", lock: 9 },
+  { id: "c6", keyword: "dinner", tone: "food-2", lock: 3 },
+  { id: "c7", keyword: "night", tone: "night-bar", lock: 5 },
 ];
 
 const toneOf = (id: string) => PHOTO_LOOKS.find((l) => l.id === id)?.tone ?? PHOTO_LOOKS[0].tone;
@@ -43,9 +49,9 @@ export function CurationSection() {
           </p>
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 28 }}>
-            {MOMENTS.map((moment) => (
+            {TAGS.map((tag) => (
               <span
-                key={moment.tag}
+                key={tag}
                 style={{
                   border: "2px solid var(--ap-ink)",
                   padding: "6px 14px",
@@ -54,7 +60,7 @@ export function CurationSection() {
                   textTransform: "uppercase",
                 }}
               >
-                {moment.tag}
+                {tag}
               </span>
             ))}
           </div>
@@ -81,29 +87,14 @@ export function CurationSection() {
 
         <div style={{ border: "2px solid var(--ap-ink)", padding: 16 }}>
           <div style={{ display: "flex", gap: 6, overflowX: "auto" }}>
-            {MOMENTS.map((moment) => (
+            {CAROUSEL.map((photo) => (
               <PhotoTile
-                key={moment.tag}
-                tone={toneOf(moment.tone)}
-                src={photoUrl(moment.keyword, moment.lock, 400, 500)}
+                key={photo.id}
+                tone={toneOf(photo.tone)}
+                src={photoUrl(photo.keyword, photo.lock, 400, 500)}
                 aspect="4/5"
                 style={{ width: "min(20vw, 130px)", flexShrink: 0 }}
-              >
-                <span
-                  style={{
-                    position: "absolute",
-                    left: 6,
-                    bottom: 6,
-                    background: "var(--ap-paper)",
-                    border: "1.5px solid var(--ap-ink)",
-                    padding: "2px 6px",
-                    fontSize: 10,
-                    fontWeight: 800,
-                  }}
-                >
-                  {moment.tag}
-                </span>
-              </PhotoTile>
+              />
             ))}
           </div>
         </div>

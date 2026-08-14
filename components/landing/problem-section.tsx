@@ -5,6 +5,10 @@ import { motion, useInView, AnimatePresence, MotionConfig } from "framer-motion"
 
 import { PhotoTile } from "@/components/landing/photo-tile";
 import { pickLooks, photoUrl } from "@/lib/landing/photo-palette";
+import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
+
+const MESSY_DURATION_MS = 1400;
+const CLEAN_DURATION_MS = 3000;
 
 const SCREENSHOT_TONE = "linear-gradient(160deg,#f2f1ea,#d8d5c8)";
 
@@ -36,20 +40,30 @@ const TILES: Tile[] = looks.map((look, i) => {
 
 export function ProblemSection() {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.4 });
+  // Not "once" — re-entering the viewport should resume the loop.
+  const inView = useInView(ref, { amount: 0.4 });
+  const reducedMotion = usePrefersReducedMotion();
   const [cleaned, setCleaned] = useState(false);
 
   useEffect(() => {
-    if (!inView || cleaned) return;
-    // Defer the state flip slightly so the "messy" state is visible for a
-    // beat before it resolves — otherwise the section reorganizes itself
-    // the instant it's scrolled into view, which reads as a glitch, not a
-    // demonstration.
-    const t = setTimeout(() => setCleaned(true), 900);
-    return () => clearTimeout(t);
-  }, [inView, cleaned]);
+    // Reduced-motion users get the informative end state, not an
+    // endlessly looping animation (that's exactly what the preference is
+    // asking to avoid).
+    if (!inView || reducedMotion) return;
 
-  const visible = TILES.filter((t) => !cleaned || t.keep);
+    // Re-scheduling one timeout per `cleaned` change (rather than a
+    // single setInterval) is what makes this loop instead of firing once:
+    // each flip's effect cleanup clears the previous timer and schedules
+    // the next one for the opposite state, alternating indefinitely for
+    // as long as the section stays in view.
+    const delay = cleaned ? CLEAN_DURATION_MS : MESSY_DURATION_MS;
+    const t = setTimeout(() => setCleaned((c) => !c), delay);
+    return () => clearTimeout(t);
+  }, [inView, cleaned, reducedMotion]);
+
+  const showCleaned = reducedMotion || cleaned;
+
+  const visible = TILES.filter((t) => !showCleaned || t.keep);
 
   return (
     <section style={{ padding: "72px 0", borderBottom: "2px solid var(--ap-ink)" }}>
@@ -84,8 +98,8 @@ export function ProblemSection() {
                   tone={tile.tone}
                   src={tile.src}
                   aspect="1/1"
-                  rotate={cleaned ? 0 : tile.rotate}
-                  blurred={tile.blurred && !cleaned}
+                  rotate={showCleaned ? 0 : tile.rotate}
+                  blurred={tile.blurred && !showCleaned}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0, scale: 0.6 }}
@@ -100,7 +114,7 @@ export function ProblemSection() {
 
       <motion.p
         initial={{ opacity: 0, y: 8 }}
-        animate={cleaned ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+        animate={showCleaned ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
         transition={{ delay: 0.2, duration: 0.4 }}
         style={{
           fontFamily: "var(--font-archivo), sans-serif",

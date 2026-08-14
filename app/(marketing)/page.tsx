@@ -4,7 +4,6 @@ import { CurationSection } from "@/components/landing/curation-section";
 import { CarouselBuilderSection } from "@/components/landing/carousel-builder-section";
 import { PhotoDumpSection } from "@/components/landing/photo-dump-section";
 import { CaptionsSection } from "@/components/landing/captions-section";
-import { EditingSection } from "@/components/landing/editing-section";
 import { FullExperienceSection } from "@/components/landing/full-experience-section";
 import { TasteSection } from "@/components/landing/taste-section";
 import { Pricing } from "@/components/landing/pricing";
@@ -19,7 +18,6 @@ export default function MarketingPage() {
       <CarouselBuilderSection />
       <PhotoDumpSection />
       <CaptionsSection />
-      <EditingSection />
       <FullExperienceSection />
       <TasteSection />
       <Pricing />
