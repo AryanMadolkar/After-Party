@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { signInAction, signUpAction } from "@/app/(auth)/actions";
 
@@ -25,13 +25,18 @@ const INPUT_STYLE: React.CSSProperties = {
   fontFamily: "var(--font-onest), sans-serif",
 };
 
-export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
+export function AuthForm({
+  mode,
+  initialError = null,
+}: {
+  mode: "sign-in" | "sign-up";
+  initialError?: string | null;
+}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(searchParams.get("error"));
+  const [error, setError] = useState<string | null>(initialError);
   const [pending, setPending] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -44,8 +49,11 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
       } else {
         await signInAction({ email, password });
       }
+      // /app reads the session fresh via cookies() on every render (it's
+      // fully dynamic), so push alone already reflects the new session —
+      // an additional router.refresh() here just raced a second RSC fetch
+      // against the one push() already triggers.
       router.push("/app");
-      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setPending(false);

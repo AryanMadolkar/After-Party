@@ -19,9 +19,6 @@ export function SocialButtons() {
       <a href="/api/auth/google" className="ap-flash" style={BUTTON_STYLE}>
         continue with google
       </a>
-      <a href="/api/auth/apple" className="ap-flash" style={BUTTON_STYLE}>
-        continue with apple
-      </a>
       <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "10px 0 0" }}>
         <span style={{ flex: 1, height: 1.5, background: "var(--ap-ink)", opacity: 0.15 }} />
         <span style={{ fontSize: 11, color: "var(--ap-ink-50)", textTransform: "uppercase" }}>or</span>

@@ -16,7 +16,7 @@ swapped in later without touching any calling code — see [Remaining TODOs](#re
 
 - **Frontend** — Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Lucide icons, Framer Motion
 - **Database** — Neon Postgres + Drizzle ORM
-- **Auth** — Custom (email/password + Google/Apple OAuth) — see [Authentication](#authentication)
+- **Auth** — Custom (email/password + Google OAuth) — see [Authentication](#authentication)
 - **Storage** — Vercel Blob
 - **Validation** — Zod
 
@@ -57,7 +57,6 @@ Open [http://localhost:3000](http://localhost:3000).
 | --- | --- |
 | `DATABASE_URL` | Neon project dashboard → Connection Details |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google Cloud Console — optional, see below |
-| `APPLE_CLIENT_ID` / `APPLE_TEAM_ID` / `APPLE_KEY_ID` / `APPLE_PRIVATE_KEY` | Apple Developer portal — optional, see below |
 | `BLOB_READ_WRITE_TOKEN` | Vercel project → Storage → Blob |
 | `OPENAI_API_KEY` / `GOOGLE_GENERATIVE_AI_API_KEY` | Prepared for the real AI pipeline — not required yet |
 
@@ -83,7 +82,7 @@ implemented in `lib/auth/`. See the code comments there for the security reasoni
   holds a random opaque token in an `httpOnly` cookie; the database stores just its
   SHA-256 hash, so a database leak alone can't produce a usable session
   (`lib/auth/session.ts`).
-- **Google/Apple ID tokens** are verified against each provider's live JWKS using
+- **Google ID tokens** are verified against Google's live JWKS using
   [`jose`](https://github.com/panva/jose) — the one non-Node-builtin dependency this
   system uses, and only for that narrow "verify a provider-signed JWT" task.
 - **Not built yet** (foundation-phase scope, same spirit as the mocked AI layer):
@@ -102,22 +101,6 @@ implemented in `lib/auth/`. See the code comments there for the security reasoni
 
 Until these are set, the "continue with google" button redirects back to sign-in with
 a clear error instead of crashing anything else.
-
-### Apple OAuth setup (optional)
-
-Requires a paid Apple Developer Program account.
-
-1. Create an **App ID** with the "Sign In with Apple" capability enabled.
-2. Create a **Services ID** — this is your `APPLE_CLIENT_ID`. Configure its redirect
-   URI as `https://yourdomain.com/api/auth/apple/callback` (Apple requires HTTPS —
-   plain `localhost` won't work for this one; test Apple sign-in against a real HTTPS
-   deployment).
-3. Create a **Sign In with Apple key** (a `.p8` file) under Keys — note its Key ID
-   (`APPLE_KEY_ID`) and your Team ID (`APPLE_TEAM_ID`, top-right of the developer
-   portal).
-4. Set `APPLE_PRIVATE_KEY` to the `.p8` file's contents, with real newlines replaced
-   by literal `\n` (most env var UIs, including Vercel's, don't accept multi-line
-   values directly).
 
 ### Vercel Blob setup
 

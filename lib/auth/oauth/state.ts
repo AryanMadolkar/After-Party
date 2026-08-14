@@ -20,21 +20,16 @@ export function generateState(): string {
 }
 
 /**
- * Stores the CSRF `state` and PKCE `verifier` for the round trip to the
- * provider and back. `SameSite=None` (not the usual `Lax`) is required
- * here specifically for Apple: its callback arrives as a cross-site POST
- * (`response_mode=form_post`), which `Lax` cookies are not sent on. `None`
- * requires `Secure`, so this flow needs HTTPS — which is also a hard
- * requirement Apple itself imposes on the redirect URI, so this doesn't
- * add a new constraint in practice (Google's redirect-based callback works
- * fine over the same cookie settings).
+ * Stores the CSRF `state` and PKCE `verifier` for the round trip to
+ * Google and back. `Lax` is sufficient since Google's callback is a
+ * same-site-safe top-level GET redirect.
  */
 export async function setOAuthCookies(state: string, verifier: string): Promise<void> {
   const cookieStore = await cookies();
   const options = {
     httpOnly: true,
-    secure: true,
-    sameSite: "none" as const,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
     path: "/",
     maxAge: OAUTH_COOKIE_MAX_AGE_SECONDS,
   };

@@ -13,7 +13,6 @@ export const metadata: Metadata = {
 
 const PROVIDER_LABEL: Record<string, string> = {
   google: "Google",
-  apple: "Apple",
 };
 
 export default async function SettingsPage() {

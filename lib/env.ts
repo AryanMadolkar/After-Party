@@ -6,12 +6,12 @@ import { z } from "zod";
  * out of the browser bundle.
  *
  * OAuth credentials are optional at the schema level even though the
- * Google/Apple sign-in buttons need them: making them required here would
+ * Google sign-in button needs them: making them required here would
  * mean any route that merely imports `serverEnv` (e.g. anything touching
  * the database) fails the moment OAuth isn't configured yet, even for
- * requests that never use it. The Google/Apple route handlers check for
- * their own credentials explicitly and fail there instead — see
- * lib/auth/oauth/google.ts and lib/auth/oauth/apple.ts.
+ * requests that never use it. The Google route handlers check for their
+ * own credentials explicitly and fail there instead — see
+ * lib/auth/oauth/google.ts.
  */
 const serverEnvSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
@@ -19,15 +19,6 @@ const serverEnvSchema = z.object({
 
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
-
-  APPLE_CLIENT_ID: z.string().optional(),
-  APPLE_TEAM_ID: z.string().optional(),
-  APPLE_KEY_ID: z.string().optional(),
-  // The .p8 private key's PEM contents. Stored in env vars as a single
-  // line with literal "\n" sequences (the only format most env var UIs
-  // accept for multi-line secrets) — un-escaped back to real newlines in
-  // lib/auth/oauth/apple.ts before use.
-  APPLE_PRIVATE_KEY: z.string().optional(),
 
   // Prepared for the real AI pipeline. Not required for the mocked foundation.
   OPENAI_API_KEY: z.string().optional(),

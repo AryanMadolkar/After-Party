@@ -45,7 +45,7 @@ export const captionStyleEnum = pgEnum("caption_style", [
   "none",
 ]);
 
-export const oauthProviderEnum = pgEnum("oauth_provider", ["google", "apple"]);
+export const oauthProviderEnum = pgEnum("oauth_provider", ["google"]);
 
 // ---------------------------------------------------------------------------
 // users
@@ -71,7 +71,7 @@ export const users = pgTable(
 );
 
 /**
- * Links a user to an external identity (Google/Apple `sub`). A user can
+ * Links a user to an external identity (e.g. Google's `sub`). A user can
  * have both a password AND one or more linked OAuth accounts. Accounts are
  * only auto-linked to an existing user when the provider's ID token claims
  * email_verified === true for a matching email — see

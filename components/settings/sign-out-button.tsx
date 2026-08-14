@@ -10,8 +10,9 @@ export function SignOutButton() {
 
   async function handleSignOut() {
     await signOutAction();
+    // "/" reads session state fresh on every render (it's fully dynamic),
+    // so push alone already reflects the signed-out state.
     router.push("/");
-    router.refresh();
   }
 
   return (

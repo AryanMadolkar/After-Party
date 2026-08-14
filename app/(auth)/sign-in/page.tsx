@@ -1,10 +1,14 @@
-import { Suspense } from "react";
-
 import { AuthTabs } from "@/components/auth/auth-tabs";
 import { SocialButtons } from "@/components/auth/social-buttons";
 import { AuthForm } from "@/components/auth/auth-form";
 
-export default function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
+
   return (
     <div>
       <AuthTabs />
@@ -20,9 +24,7 @@ export default function SignInPage() {
         welcome back.
       </h2>
       <SocialButtons />
-      <Suspense>
-        <AuthForm mode="sign-in" />
-      </Suspense>
+      <AuthForm mode="sign-in" initialError={error ?? null} />
       <p style={{ fontSize: 13, color: "var(--ap-ink-50)", marginTop: 22, textAlign: "center" }}>
         new here?{" "}
         <a href="/sign-up" style={{ fontWeight: 700 }}>

@@ -22,6 +22,13 @@
       "when": 1786607293364,
       "tag": "0002_groovy_penance",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1786687479661,
+      "tag": "0003_spicy_fenris",
+      "breakpoints": true
     }
   ]
 }
