@@ -6,6 +6,8 @@ const ARCHIVO: React.CSSProperties = { fontFamily: "var(--font-archivo), sans-se
 
 export async function MarketingNav() {
   const user = await getCurrentUser();
+  const ctaHref = user ? "/app" : "/sign-up";
+  const ctaLabel = user ? "go to dashboard" : "try after party";
 
   return (
     <nav
@@ -16,7 +18,7 @@ export async function MarketingNav() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "18px clamp(20px,5vw,56px)",
+        padding: "16px clamp(20px,5vw,56px)",
         background: "var(--ap-paper)",
         borderBottom: "2px solid var(--ap-ink)",
       }}
@@ -27,8 +29,8 @@ export async function MarketingNav() {
       >
         <span
           style={{
-            width: 14,
-            height: 14,
+            width: 12,
+            height: 12,
             background: "var(--ap-lime)",
             border: "2px solid var(--ap-ink)",
             borderRadius: "50%",
@@ -39,88 +41,49 @@ export async function MarketingNav() {
           style={{
             ...ARCHIVO,
             fontWeight: 900,
-            fontSize: 19,
+            fontSize: 17,
             letterSpacing: "-0.01em",
             textTransform: "uppercase",
             color: "var(--ap-ink)",
           }}
         >
-          After Party
+          after party
         </span>
       </Link>
 
       <div
         style={{
           display: "flex",
-          gap: 30,
+          gap: 26,
           fontWeight: 600,
           fontSize: 13,
           textTransform: "uppercase",
-          letterSpacing: "0.03em",
+          letterSpacing: "0.02em",
         }}
       >
+        <Link href="#product">product</Link>
         <Link href="#how-it-works">how it works</Link>
-        <Link href="#modes">post types</Link>
         <Link href="#pricing">pricing</Link>
-        <Link href="#faq">faq</Link>
+        {!user && <Link href="/sign-in">sign in</Link>}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        {user ? (
-          <Link
-            href="/app"
-            className="ap-flash"
-            style={{
-              background: "var(--ap-ink)",
-              color: "var(--ap-paper)",
-              border: "2px solid var(--ap-ink)",
-              padding: "10px 22px",
-              fontWeight: 800,
-              fontSize: 13,
-              textTransform: "uppercase",
-              cursor: "pointer",
-              textDecoration: "none",
-            }}
-          >
-            go to dashboard
-          </Link>
-        ) : (
-          <>
-            <Link
-              href="/sign-in"
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "var(--ap-ink)",
-                fontWeight: 700,
-                fontSize: 13,
-                textTransform: "uppercase",
-                cursor: "pointer",
-                textDecoration: "none",
-              }}
-            >
-              sign in
-            </Link>
-            <Link
-              href="/sign-up"
-              className="ap-flash"
-              style={{
-                background: "var(--ap-ink)",
-                color: "var(--ap-paper)",
-                border: "2px solid var(--ap-ink)",
-                padding: "10px 22px",
-                fontWeight: 800,
-                fontSize: 13,
-                textTransform: "uppercase",
-                cursor: "pointer",
-                textDecoration: "none",
-              }}
-            >
-              create a post
-            </Link>
-          </>
-        )}
-      </div>
+      <Link
+        href={ctaHref}
+        className="ap-flash"
+        style={{
+          background: "var(--ap-ink)",
+          color: "var(--ap-paper)",
+          border: "2px solid var(--ap-ink)",
+          padding: "9px 18px",
+          fontWeight: 800,
+          fontSize: 12.5,
+          textTransform: "uppercase",
+          cursor: "pointer",
+          textDecoration: "none",
+        }}
+      >
+        {ctaLabel}
+      </Link>
     </nav>
   );
 }
