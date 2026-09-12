@@ -1,235 +1,285 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { CutRoomMark } from "@/components/brand/cutroom-mark";
+import "@/app/cutroom.css";
+
 export const metadata: Metadata = {
   title: "CutRoom — Social packaging for creator agencies",
   description:
     "Drop the shoot folder. Get on-brand selects, platform crops, and client-voice captions — ready for Buffer.",
 };
 
+const CLIENTS = [
+  { name: "Northstar", active: true },
+  { name: "Loom & Co", active: false },
+  { name: "Pulse UGC", active: false },
+];
+
+const THUMBS: Array<{ tone: "warm" | "cool" | "stone"; channel?: string }> = [
+  { tone: "warm", channel: "Feed" },
+  { tone: "stone", channel: "Feed" },
+  { tone: "cool", channel: "Stories" },
+  { tone: "cool", channel: "Feed" },
+  { tone: "warm", channel: "LinkedIn" },
+  { tone: "stone" },
+  { tone: "stone", channel: "Stories" },
+  { tone: "warm" },
+  { tone: "cool", channel: "Feed" },
+];
+
+function DeskPreview() {
+  return (
+    <div className="cr-hero-visual-wrap" aria-hidden>
+      <div className="cr-hero-band" />
+      <div className="cr-desk">
+        <aside className="cr-desk-rail">
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 650,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "var(--cr-ink-muted)",
+              marginBottom: 4,
+            }}
+          >
+            Clients
+          </div>
+          {CLIENTS.map((c) => (
+            <div key={c.name} className="cr-desk-client" data-active={c.active}>
+              {c.name}
+            </div>
+          ))}
+        </aside>
+
+        <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 12, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 650 }}>Northstar · Spring drop</div>
+              <div className="cr-brand-lock">
+                <span
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: 99,
+                    background: "var(--cr-brand-lock)",
+                  }}
+                />
+                Brand lock
+              </div>
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: "var(--cr-ink-muted)",
+                border: "1px solid var(--cr-border)",
+                borderRadius: 6,
+                padding: "5px 8px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Export zip + CSV
+            </div>
+          </div>
+
+          <div className="cr-select-grid">
+            {THUMBS.map((t, i) => (
+              <div key={i} className="cr-thumb" data-tone={t.tone}>
+                {t.channel ? <span className="cr-thumb-badge">{t.channel}</span> : null}
+              </div>
+            ))}
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 8,
+              borderTop: "1px solid var(--cr-border)",
+              paddingTop: 10,
+            }}
+          >
+            <div
+              style={{
+                border: "1px solid var(--cr-border)",
+                borderRadius: 6,
+                padding: "8px 10px",
+                background: "var(--cr-paper)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.06em",
+                  color: "var(--cr-ink-muted)",
+                  marginBottom: 4,
+                }}
+              >
+                Caption EN
+              </div>
+              <div style={{ fontSize: 12, lineHeight: 1.4, color: "var(--cr-ink-secondary)" }}>
+                Soft light, clean crop — ready for the feed.
+              </div>
+            </div>
+            <div
+              style={{
+                border: "1px solid var(--cr-border)",
+                borderRadius: 6,
+                padding: "8px 10px",
+                background: "var(--cr-paper)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.06em",
+                  color: "var(--cr-ink-muted)",
+                  marginBottom: 4,
+                }}
+              >
+                Caption HI
+              </div>
+              <div style={{ fontSize: 12, lineHeight: 1.4, color: "var(--cr-ink-secondary)" }}>
+                सॉफ्ट लाइट, साफ़ क्रॉप — फीड के लिए तैयार।
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function MarketingPage() {
   return (
-    <div className="cr-scope" style={{ background: "var(--cr-surface)" }}>
+    <div className="cr-scope">
       <header
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "18px clamp(20px, 4vw, 48px)",
+          padding: "16px clamp(20px, 4vw, 48px)",
           borderBottom: "1px solid var(--cr-border)",
-          background: "rgba(244,245,248,0.86)",
-          backdropFilter: "blur(10px)",
+          background: "var(--cr-paper)",
           position: "sticky",
           top: 0,
           zIndex: 20,
         }}
       >
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span
-            aria-hidden
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 8,
-              background: "linear-gradient(135deg, var(--cr-primary), var(--cr-primary-strong))",
-              display: "grid",
-              placeItems: "center",
-              color: "#fff",
-              fontWeight: 700,
-              fontSize: 14,
-            }}
-          >
-            C
-          </span>
-          <span style={{ fontWeight: 700, fontSize: 17, letterSpacing: "-0.03em" }}>CutRoom</span>
+          <CutRoomMark size={26} />
+          <span style={{ fontWeight: 700, fontSize: 16, letterSpacing: "-0.03em" }}>CutRoom</span>
         </Link>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <Link href="/login" className="cr-btn cr-btn-ghost">
             Log in
           </Link>
           <Link href="/signup" className="cr-btn cr-btn-primary">
-            Start free
+            Create agency workspace
           </Link>
         </div>
       </header>
 
       <main>
-        {/* Hero — brand + one headline + one sentence + CTAs + full-bleed visual plane */}
-        <section
-          style={{
-            position: "relative",
-            minHeight: "min(92vh, 820px)",
-            display: "grid",
-            alignItems: "end",
-            overflow: "hidden",
-            background:
-              "radial-gradient(1200px 600px at 80% 10%, rgba(94,106,210,0.22), transparent 55%), linear-gradient(160deg, #eef0f7 0%, #f4f5f8 42%, #e8ebf4 100%)",
-          }}
-        >
-          <div
-            aria-hidden
-            style={{
-              position: "absolute",
-              inset: 0,
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.55)), repeating-linear-gradient(90deg, transparent, transparent 72px, rgba(94,106,210,0.06) 72px, rgba(94,106,210,0.06) 73px), repeating-linear-gradient(0deg, transparent, transparent 72px, rgba(94,106,210,0.05) 72px, rgba(94,106,210,0.05) 73px)",
-              pointerEvents: "none",
-            }}
-          />
-          <div
-            aria-hidden
-            style={{
-              position: "absolute",
-              right: "-8%",
-              top: "8%",
-              width: "min(58vw, 640px)",
-              height: "min(70vh, 560px)",
-              borderRadius: "28px 0 0 28px",
-              background:
-                "linear-gradient(145deg, rgba(255,255,255,0.95), rgba(238,240,247,0.7))",
-              border: "1px solid rgba(229,231,235,0.9)",
-              boxShadow: "0 30px 80px rgba(34,35,38,0.08)",
-              transform: "rotate(-2deg)",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                height: 44,
-                borderBottom: "1px solid var(--cr-border)",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "0 16px",
-                background: "#fff",
-              }}
-            >
-              <span style={{ width: 8, height: 8, borderRadius: 99, background: "#E5E7EB" }} />
-              <span style={{ width: 8, height: 8, borderRadius: 99, background: "#E5E7EB" }} />
-              <span style={{ width: 120, height: 8, borderRadius: 99, background: "#F4F5F8", marginLeft: 8 }} />
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "72px 1fr", height: "calc(100% - 44px)" }}>
-              <div style={{ borderRight: "1px solid var(--cr-border)", background: "#fff", padding: 12 }}>
-                {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    style={{
-                      height: 28,
-                      borderRadius: 6,
-                      marginBottom: 8,
-                      background: i === 0 ? "rgba(94,106,210,0.14)" : "#F4F5F8",
-                    }}
-                  />
-                ))}
-              </div>
-              <div style={{ padding: 16, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      borderRadius: 10,
-                      background:
-                        i % 3 === 0
-                          ? "linear-gradient(160deg,#d7dcf5,#c4c9e8)"
-                          : i % 3 === 1
-                            ? "linear-gradient(160deg,#e8e9ee,#d5d7df)"
-                            : "linear-gradient(160deg,#f0f1f5,#dddfe6)",
-                      minHeight: 72,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              position: "relative",
-              zIndex: 1,
-              padding: "clamp(48px, 10vh, 96px) clamp(20px, 4vw, 48px) clamp(56px, 10vh, 88px)",
-              maxWidth: 720,
-            }}
-          >
+        <section className="cr-hero">
+          <div style={{ minWidth: 0 }}>
             <p
               style={{
-                margin: "0 0 18px",
-                fontSize: 13,
+                margin: "0 0 14px",
+                fontSize: 12,
                 fontWeight: 650,
-                letterSpacing: "0.08em",
+                letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                color: "var(--cr-primary-strong)",
+                color: "var(--cr-ink-muted)",
               }}
             >
-              CutRoom
+              Agency packaging desk
             </p>
             <h1
               style={{
                 margin: 0,
-                fontSize: "clamp(36px, 5.4vw, 56px)",
-                lineHeight: 1.05,
-                letterSpacing: "-0.045em",
+                fontSize: "clamp(34px, 4.6vw, 46px)",
+                lineHeight: 1.08,
+                letterSpacing: "-0.03em",
                 fontWeight: 700,
                 color: "var(--cr-ink)",
-                maxWidth: 14.5 + "ch",
+                maxWidth: 16 + "ch",
               }}
             >
               Drop the shoot folder. Get on-brand selects, platform crops, and client-voice captions —
               ready for Buffer.
             </h1>
             <p
-              className="cr-muted"
               style={{
-                margin: "18px 0 0",
-                fontSize: 17,
+                margin: "16px 0 0",
+                fontSize: 16,
                 lineHeight: 1.5,
-                maxWidth: 42 + "ch",
+                maxWidth: 40 + "ch",
+                color: "var(--cr-ink-secondary)",
               }}
             >
-              The B2B packaging desk for creator and UGC agencies — EN/HI captions, client brand kits,
-              zero consumer song fluff.
+              Premium production desk for creator and UGC agencies — brand kits, select boards, EN/HI
+              captions, zip + CSV export.
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 28 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 26 }}>
               <Link href="/signup" className="cr-btn cr-btn-primary" style={{ padding: "12px 18px" }}>
-                Create your agency workspace
+                Create agency workspace
               </Link>
               <Link href="/login" className="cr-btn cr-btn-secondary" style={{ padding: "12px 18px" }}>
                 Log in
               </Link>
             </div>
           </div>
+
+          <DeskPreview />
         </section>
 
-        <section
-          style={{
-            padding: "72px clamp(20px, 4vw, 48px)",
-            borderTop: "1px solid var(--cr-border)",
-            background: "#fff",
-          }}
-        >
-          <h2 style={{ margin: 0, fontSize: 28, letterSpacing: "-0.03em", fontWeight: 700, maxWidth: 16 + "ch" }}>
-            Built for multi-client desks
-          </h2>
-          <p className="cr-muted" style={{ margin: "12px 0 0", maxWidth: 52 + "ch", fontSize: 16, lineHeight: 1.55 }}>
-            Keep every client&apos;s brand kit, shoot queue, and export package in one workspace —
-            so producers ship selects instead of sorting shoot dumps.
-          </p>
+        <section className="cr-feature-row">
+          <div className="cr-feature-card">
+            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 650, letterSpacing: "-0.02em" }}>
+              Brand kits
+            </h2>
+            <p className="cr-muted" style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.5 }}>
+              Lock palette, voice, and crop rules per client so every select stays on-brand.
+            </p>
+          </div>
+          <div className="cr-feature-card">
+            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 650, letterSpacing: "-0.02em" }}>
+              Select board
+            </h2>
+            <p className="cr-muted" style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.5 }}>
+              Dense Feed / Stories / LinkedIn grids — review like a cutting room, not a slideshow.
+            </p>
+          </div>
+          <div className="cr-feature-card">
+            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 650, letterSpacing: "-0.02em" }}>
+              Ship
+            </h2>
+            <p className="cr-muted" style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.5 }}>
+              Export zip + captions.csv ready for Buffer — EN and HI in one package.
+            </p>
+          </div>
         </section>
       </main>
 
       <footer
         style={{
-          padding: "28px clamp(20px, 4vw, 48px)",
-          borderTop: "1px solid var(--cr-border)",
+          padding: "24px clamp(20px, 4vw, 48px)",
           display: "flex",
           justifyContent: "space-between",
           gap: 16,
           flexWrap: "wrap",
           fontSize: 13,
           color: "var(--cr-ink-muted)",
+          background: "var(--cr-paper)",
         }}
       >
         <span>© {new Date().getFullYear()} CutRoom</span>
-        <span>Agency packaging · not a consumer cull app</span>
+        <span>Agency packaging desk</span>
       </footer>
     </div>
   );

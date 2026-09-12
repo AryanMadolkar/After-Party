@@ -6,6 +6,7 @@ import { Building2, Clapperboard, Settings, PanelLeft } from "lucide-react";
 import { useState } from "react";
 
 import { signOutAction } from "@/app/(auth)/actions";
+import { CutRoomMark } from "@/components/brand/cutroom-mark";
 import type { SessionUser } from "@/lib/contracts";
 
 const NAV = [
@@ -47,7 +48,7 @@ export function AppNav({
       <aside
         className={`cr-sidebar${open ? " cr-sidebar-open" : ""}`}
         style={{
-          width: 240,
+          width: 236,
           flexShrink: 0,
           borderRight: "1px solid var(--cr-border)",
           background: "var(--cr-sidebar)",
@@ -58,25 +59,10 @@ export function AppNav({
           top: 0,
         }}
       >
-        <div style={{ padding: "18px 16px 12px", borderBottom: "1px solid var(--cr-border)" }}>
+        <div style={{ padding: "18px 14px 12px", borderBottom: "1px solid var(--cr-border)" }}>
           <Link href="/app" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span
-              aria-hidden
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 8,
-                background: "linear-gradient(135deg, var(--cr-primary), var(--cr-primary-strong))",
-                display: "grid",
-                placeItems: "center",
-                color: "#fff",
-                fontSize: 13,
-                fontWeight: 700,
-              }}
-            >
-              C
-            </span>
-            <span style={{ fontWeight: 700, fontSize: 15, letterSpacing: "-0.02em" }}>CutRoom</span>
+            <CutRoomMark size={24} />
+            <span style={{ fontWeight: 700, fontSize: 15, letterSpacing: "-0.03em" }}>CutRoom</span>
           </Link>
 
           <div
@@ -85,10 +71,14 @@ export function AppNav({
               padding: "10px 12px",
               borderRadius: 8,
               border: "1px solid var(--cr-border)",
-              background: "var(--cr-surface)",
+              background: "var(--cr-card)",
+              boxShadow: "var(--cr-shadow)",
             }}
           >
-            <div className="cr-muted" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase" }}>
+            <div
+              className="cr-muted"
+              style={{ fontSize: 10, fontWeight: 650, letterSpacing: "0.06em", textTransform: "uppercase" }}
+            >
               Workspace
             </div>
             <div style={{ marginTop: 4, fontSize: 13, fontWeight: 600, lineHeight: 1.3 }}>
@@ -97,7 +87,7 @@ export function AppNav({
           </div>
         </div>
 
-        <nav style={{ padding: 12, display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
+        <nav style={{ padding: "10px 8px", display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
           {NAV.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
             return (
@@ -105,19 +95,10 @@ export function AppNav({
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "10px 12px",
-                  borderRadius: 8,
-                  fontSize: 14,
-                  fontWeight: active ? 600 : 500,
-                  color: active ? "var(--cr-primary-strong)" : "var(--cr-ink-muted)",
-                  background: active ? "rgba(94, 106, 210, 0.1)" : "transparent",
-                }}
+                className="cr-nav-link"
+                data-active={active}
               >
-                <Icon size={17} strokeWidth={active ? 2.25 : 1.75} />
+                <Icon size={17} strokeWidth={active ? 2.15 : 1.75} />
                 {label}
               </Link>
             );
