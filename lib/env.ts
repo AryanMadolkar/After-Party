@@ -23,6 +23,13 @@ const serverEnvSchema = z.object({
   // Prepared for the real AI pipeline. Not required for the mocked foundation.
   OPENAI_API_KEY: z.string().optional(),
   GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),
+
+  // Observability / queue (optional until wired in preview/prod).
+  SENTRY_DSN: z.string().optional(),
+  SENTRY_ENVIRONMENT: z.string().optional(),
+  INNGEST_EVENT_KEY: z.string().optional(),
+  INNGEST_SIGNING_KEY: z.string().optional(),
+  CUTROOM_AI_PROVIDER: z.string().optional(),
 });
 
 function validate<T extends z.ZodTypeAny>(

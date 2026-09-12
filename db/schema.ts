@@ -230,6 +230,74 @@ export const auditLogs = pgTable(
   ],
 );
 
+/**
+ * Stub shoot rows — upload/CRUD lands in Solo-P5. Present so processing_jobs
+ * can take a stable org-scoped FK.
+ */
+export const shoots = pgTable(
+  "shoots",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orgId: uuid("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    clientId: uuid("client_id").references(() => clients.id, { onDelete: "set null" }),
+    name: text("name").notNull().default("Untitled shoot"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("shoots_org_id_idx").on(table.orgId),
+    index("shoots_client_id_idx").on(table.clientId),
+    index("shoots_created_at_idx").on(table.createdAt),
+  ],
+);
+
+export const processingJobTypeEnum = pgEnum("processing_job_type", [
+  "full_pipeline",
+  "generate_captions",
+  "build_export",
+  "score_assets",
+  "hello",
+]);
+
+export const processingJobStatusEnum = pgEnum("processing_job_status", [
+  "queued",
+  "running",
+  "succeeded",
+  "failed",
+]);
+
+/** Async AI/media jobs — driven by Inngest (Solo-P3+). */
+export const processingJobs = pgTable(
+  "processing_jobs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orgId: uuid("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    shootId: uuid("shoot_id")
+      .notNull()
+      .references(() => shoots.id, { onDelete: "cascade" }),
+    type: processingJobTypeEnum("type").notNull(),
+    status: processingJobStatusEnum("status").notNull().default("queued"),
+    progressPct: integer("progress_pct").notNull().default(0),
+    triggeredBy: uuid("triggered_by").references(() => users.id, { onDelete: "set null" }),
+    error: text("error"),
+    payload: jsonb("payload").$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    startedAt: timestamp("started_at", { withTimezone: true }),
+    finishedAt: timestamp("finished_at", { withTimezone: true }),
+  },
+  (table) => [
+    index("processing_jobs_org_id_idx").on(table.orgId),
+    index("processing_jobs_shoot_id_idx").on(table.shootId),
+    index("processing_jobs_status_idx").on(table.status),
+    index("processing_jobs_created_at_idx").on(table.createdAt),
+  ],
+);
+
 // ---------------------------------------------------------------------------
 // projects
 // ---------------------------------------------------------------------------
@@ -436,6 +504,8 @@ export const organizationsRelations = relations(organizations, ({ many }) => ({
   clients: many(clients),
   brandKits: many(brandKits),
   auditLogs: many(auditLogs),
+  shoots: many(shoots),
+  processingJobs: many(processingJobs),
 }));
 
 export const membershipsRelations = relations(memberships, ({ one }) => ({
@@ -452,6 +522,7 @@ export const clientsRelations = relations(clients, ({ one, many }) => ({
     references: [organizations.id],
   }),
   brandKits: many(brandKits),
+  shoots: many(shoots),
 }));
 
 export const brandKitsRelations = relations(brandKits, ({ one }) => ({
@@ -468,6 +539,27 @@ export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
     references: [organizations.id],
   }),
   actor: one(users, { fields: [auditLogs.actorUserId], references: [users.id] }),
+}));
+
+export const shootsRelations = relations(shoots, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [shoots.orgId],
+    references: [organizations.id],
+  }),
+  client: one(clients, { fields: [shoots.clientId], references: [clients.id] }),
+  processingJobs: many(processingJobs),
+}));
+
+export const processingJobsRelations = relations(processingJobs, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [processingJobs.orgId],
+    references: [organizations.id],
+  }),
+  shoot: one(shoots, { fields: [processingJobs.shootId], references: [shoots.id] }),
+  triggerer: one(users, {
+    fields: [processingJobs.triggeredBy],
+    references: [users.id],
+  }),
 }));
 
 export const projectsRelations = relations(projects, ({ one, many }) => ({
@@ -543,6 +635,12 @@ export type NewBrandKit = typeof brandKits.$inferInsert;
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type NewAuditLog = typeof auditLogs.$inferInsert;
 
+export type Shoot = typeof shoots.$inferSelect;
+export type NewShoot = typeof shoots.$inferInsert;
+
+export type ProcessingJobRow = typeof processingJobs.$inferSelect;
+export type NewProcessingJob = typeof processingJobs.$inferInsert;
+
 export type Project = typeof projects.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;
 
@@ -570,5 +668,7 @@ export type CaptionStyle = (typeof captionStyleEnum.enumValues)[number];
 export type OAuthProvider = (typeof oauthProviderEnum.enumValues)[number];
 export type PlanIdColumn = (typeof planIdEnum.enumValues)[number];
 export type MembershipRoleColumn = (typeof membershipRoleEnum.enumValues)[number];
+export type ProcessingJobTypeColumn = (typeof processingJobTypeEnum.enumValues)[number];
+export type ProcessingJobStatusColumn = (typeof processingJobStatusEnum.enumValues)[number];
 /** A post's type mirrors selection type — see the `posts.type` column comment. */
 export type PostType = SelectionType;
