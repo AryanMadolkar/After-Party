@@ -6,6 +6,8 @@ import { getUserByEmail } from "@/lib/db/queries/users";
 import { createUserWithPassword } from "@/lib/db/mutations/users";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { createSession, destroySession } from "@/lib/auth/session";
+import { createOrg } from "@/lib/auth/tenancy";
+import { CreateOrgInput, type OrgPublic } from "@/lib/contracts";
 
 const signUpSchema = z.object({
   name: z.string().trim().min(1, "Enter your name.").max(120),
@@ -58,4 +60,9 @@ export async function signInAction(input: z.infer<typeof signInSchema>) {
 
 export async function signOutAction() {
   await destroySession();
+}
+
+/** Creates an org + owner membership for the current session user (no UI in P1). */
+export async function createOrgAction(input: CreateOrgInput): Promise<OrgPublic> {
+  return createOrg(input);
 }

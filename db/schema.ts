@@ -47,6 +47,14 @@ export const captionStyleEnum = pgEnum("caption_style", [
 
 export const oauthProviderEnum = pgEnum("oauth_provider", ["google"]);
 
+export const planIdEnum = pgEnum("plan_id", ["studio", "agency", "agency_plus"]);
+
+export const membershipRoleEnum = pgEnum("membership_role", [
+  "owner",
+  "producer",
+  "editor",
+]);
+
 // ---------------------------------------------------------------------------
 // users
 // ---------------------------------------------------------------------------
@@ -113,6 +121,112 @@ export const sessions = pgTable(
   (table) => [
     uniqueIndex("sessions_token_hash_idx").on(table.tokenHash),
     index("sessions_user_id_idx").on(table.userId),
+  ],
+);
+
+// ---------------------------------------------------------------------------
+// organizations (CutRoom tenancy)
+// ---------------------------------------------------------------------------
+
+export const organizations = pgTable(
+  "organizations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    slug: text("slug").notNull(),
+    planId: planIdEnum("plan_id").notNull().default("studio"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("organizations_slug_idx").on(table.slug),
+    index("organizations_created_at_idx").on(table.createdAt),
+  ],
+);
+
+export const memberships = pgTable(
+  "memberships",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orgId: uuid("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: membershipRoleEnum("role").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("memberships_org_user_idx").on(table.orgId, table.userId),
+    index("memberships_user_id_idx").on(table.userId),
+    index("memberships_org_id_idx").on(table.orgId),
+  ],
+);
+
+/**
+ * Stub client rows — CRUD lands in Solo-P4. Present now so brand_kits and
+ * later tenant tables can take a stable FK.
+ */
+export const clients = pgTable(
+  "clients",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orgId: uuid("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("clients_org_id_idx").on(table.orgId),
+    index("clients_created_at_idx").on(table.createdAt),
+  ],
+);
+
+/**
+ * Stub brand kit rows — CRUD lands in Solo-P4.
+ */
+export const brandKits = pgTable(
+  "brand_kits",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orgId: uuid("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => clients.id, { onDelete: "cascade" }),
+    name: text("name").notNull().default("Default"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("brand_kits_org_id_idx").on(table.orgId),
+    index("brand_kits_client_id_idx").on(table.clientId),
+    uniqueIndex("brand_kits_client_id_unique_idx").on(table.clientId),
+  ],
+);
+
+export const auditLogs = pgTable(
+  "audit_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orgId: uuid("org_id").references(() => organizations.id, { onDelete: "set null" }),
+    actorUserId: uuid("actor_user_id").references(() => users.id, { onDelete: "set null" }),
+    action: text("action").notNull(),
+    targetType: text("target_type"),
+    targetId: uuid("target_id"),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("audit_logs_org_id_idx").on(table.orgId),
+    index("audit_logs_actor_user_id_idx").on(table.actorUserId),
+    index("audit_logs_action_idx").on(table.action),
+    index("audit_logs_created_at_idx").on(table.createdAt),
   ],
 );
 
@@ -305,6 +419,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   projects: many(projects),
   oauthAccounts: many(oauthAccounts),
   sessions: many(sessions),
+  memberships: many(memberships),
+  auditLogs: many(auditLogs),
 }));
 
 export const oauthAccountsRelations = relations(oauthAccounts, ({ one }) => ({
@@ -313,6 +429,45 @@ export const oauthAccountsRelations = relations(oauthAccounts, ({ one }) => ({
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] }),
+}));
+
+export const organizationsRelations = relations(organizations, ({ many }) => ({
+  memberships: many(memberships),
+  clients: many(clients),
+  brandKits: many(brandKits),
+  auditLogs: many(auditLogs),
+}));
+
+export const membershipsRelations = relations(memberships, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [memberships.orgId],
+    references: [organizations.id],
+  }),
+  user: one(users, { fields: [memberships.userId], references: [users.id] }),
+}));
+
+export const clientsRelations = relations(clients, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [clients.orgId],
+    references: [organizations.id],
+  }),
+  brandKits: many(brandKits),
+}));
+
+export const brandKitsRelations = relations(brandKits, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [brandKits.orgId],
+    references: [organizations.id],
+  }),
+  client: one(clients, { fields: [brandKits.clientId], references: [clients.id] }),
+}));
+
+export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [auditLogs.orgId],
+    references: [organizations.id],
+  }),
+  actor: one(users, { fields: [auditLogs.actorUserId], references: [users.id] }),
 }));
 
 export const projectsRelations = relations(projects, ({ one, many }) => ({
@@ -373,6 +528,21 @@ export type NewOAuthAccount = typeof oauthAccounts.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
 
+export type Organization = typeof organizations.$inferSelect;
+export type NewOrganization = typeof organizations.$inferInsert;
+
+export type MembershipRow = typeof memberships.$inferSelect;
+export type NewMembership = typeof memberships.$inferInsert;
+
+export type Client = typeof clients.$inferSelect;
+export type NewClient = typeof clients.$inferInsert;
+
+export type BrandKit = typeof brandKits.$inferSelect;
+export type NewBrandKit = typeof brandKits.$inferInsert;
+
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type NewAuditLog = typeof auditLogs.$inferInsert;
+
 export type Project = typeof projects.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;
 
@@ -398,5 +568,7 @@ export type ProjectStatus = (typeof projectStatusEnum.enumValues)[number];
 export type SelectionType = (typeof selectionTypeEnum.enumValues)[number];
 export type CaptionStyle = (typeof captionStyleEnum.enumValues)[number];
 export type OAuthProvider = (typeof oauthProviderEnum.enumValues)[number];
+export type PlanIdColumn = (typeof planIdEnum.enumValues)[number];
+export type MembershipRoleColumn = (typeof membershipRoleEnum.enumValues)[number];
 /** A post's type mirrors selection type — see the `posts.type` column comment. */
 export type PostType = SelectionType;
