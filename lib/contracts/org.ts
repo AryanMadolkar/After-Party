@@ -37,6 +37,7 @@ export const CreateOrgInput = z.object({
     .max(80)
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase kebab-case.")
     .optional(),
+  planId: PlanIdEnum.optional(),
 });
 export type CreateOrgInput = z.infer<typeof CreateOrgInput>;
 

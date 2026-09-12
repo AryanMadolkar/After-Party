@@ -15,6 +15,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(authorizationUrl);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Google sign-in isn't configured.";
-    return NextResponse.redirect(new URL(`/sign-in?error=${encodeURIComponent(message)}`, request.url));
+    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(message)}`, request.url));
   }
 }

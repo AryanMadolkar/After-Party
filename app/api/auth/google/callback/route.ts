@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 
   if (!code || !returnedState || !expectedState || !verifier || returnedState !== expectedState) {
     return NextResponse.redirect(
-      new URL("/sign-in?error=Google%20sign-in%20failed.%20Please%20try%20again.", request.url),
+      new URL("/login?error=Google%20sign-in%20failed.%20Please%20try%20again.", request.url),
     );
   }
 
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("Google sign-in failed", error);
     return NextResponse.redirect(
-      new URL("/sign-in?error=Google%20sign-in%20failed.%20Please%20try%20again.", request.url),
+      new URL("/login?error=Google%20sign-in%20failed.%20Please%20try%20again.", request.url),
     );
   }
 }

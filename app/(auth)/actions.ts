@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { redirect } from "next/navigation";
 
 import { getUserByEmail } from "@/lib/db/queries/users";
 import { createUserWithPassword } from "@/lib/db/mutations/users";
@@ -60,9 +61,10 @@ export async function signInAction(input: z.infer<typeof signInSchema>) {
 
 export async function signOutAction() {
   await destroySession();
+  redirect("/login");
 }
 
-/** Creates an org + owner membership for the current session user (no UI in P1). */
+/** Creates an org + owner membership for the current session user. */
 export async function createOrgAction(input: CreateOrgInput): Promise<OrgPublic> {
   return createOrg(input);
 }

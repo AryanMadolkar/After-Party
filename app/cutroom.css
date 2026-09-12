@@ -1,0 +1,190 @@
+/* CutRoom product tokens — Linear / agency-desk shell (Lane E). */
+.cr-scope {
+  --cr-primary: #5e6ad2;
+  --cr-primary-strong: #4f46e5;
+  --cr-surface: #f4f5f8;
+  --cr-card: #ffffff;
+  --cr-ink: #222326;
+  --cr-ink-muted: #6b6f76;
+  --cr-border: #e5e7eb;
+  --cr-sidebar: #ffffff;
+  --cr-radius: 10px;
+  --cr-shadow: 0 1px 2px rgba(34, 35, 38, 0.04);
+
+  color: var(--cr-ink);
+  background: var(--cr-surface);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+.cr-scope a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.cr-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.cr-btn-primary {
+  background: var(--cr-primary);
+  color: #fff;
+}
+
+.cr-btn-primary:hover:not(:disabled) {
+  background: var(--cr-primary-strong);
+}
+
+.cr-btn-secondary {
+  background: var(--cr-card);
+  color: var(--cr-ink);
+  border-color: var(--cr-border);
+}
+
+.cr-btn-secondary:hover:not(:disabled) {
+  border-color: #d1d5db;
+  background: #fafafa;
+}
+
+.cr-btn-ghost {
+  background: transparent;
+  color: var(--cr-ink-muted);
+}
+
+.cr-btn-ghost:hover:not(:disabled) {
+  color: var(--cr-ink);
+  background: rgba(34, 35, 38, 0.04);
+}
+
+.cr-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--cr-border);
+  border-radius: 8px;
+  background: var(--cr-card);
+  color: var(--cr-ink);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cr-input:focus {
+  border-color: var(--cr-primary);
+  box-shadow: 0 0 0 3px rgba(94, 106, 210, 0.18);
+}
+
+.cr-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--cr-ink);
+  margin-bottom: 6px;
+}
+
+.cr-muted {
+  color: var(--cr-ink-muted);
+}
+
+.cr-card {
+  background: var(--cr-card);
+  border: 1px solid var(--cr-border);
+  border-radius: var(--cr-radius);
+  box-shadow: var(--cr-shadow);
+}
+
+.cr-plan-card {
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  padding: 16px;
+  border: 1px solid var(--cr-border);
+  border-radius: var(--cr-radius);
+  background: var(--cr-card);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cr-plan-card[data-selected="true"] {
+  border-color: var(--cr-primary);
+  box-shadow: 0 0 0 3px rgba(94, 106, 210, 0.16);
+}
+
+.cr-plan-card:hover {
+  border-color: #c7cbe8;
+}
+
+@media (max-width: 860px) {
+  .cr-shell {
+    --cr-sidebar-w: 0px;
+  }
+
+  .cr-sidebar {
+    position: fixed !important;
+    left: 0;
+    top: 0;
+    z-index: 50;
+    transform: translateX(-105%);
+    transition: transform 0.2s ease;
+    box-shadow: 8px 0 24px rgba(34, 35, 38, 0.08);
+  }
+
+  .cr-sidebar-open {
+    transform: translateX(0);
+  }
+
+  .cr-sidebar-backdrop {
+    display: block;
+  }
+
+  .cr-mobile-nav-trigger {
+    display: inline-flex !important;
+  }
+}
+
+.cr-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(34, 35, 38, 0.35);
+  z-index: 40;
+  border: none;
+  cursor: pointer;
+}
+
+.cr-mobile-nav-trigger {
+  display: none !important;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 40;
+  background: var(--cr-card);
+  border: 1px solid var(--cr-border);
+}
+
+.cr-main {
+  padding-top: 28px;
+}
+
+@media (max-width: 860px) {
+  .cr-main {
+    padding-top: 64px !important;
+  }
+}
+
