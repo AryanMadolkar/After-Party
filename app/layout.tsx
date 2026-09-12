@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Fraunces, Archivo, Onest } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -7,7 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
-import "./ap-design.css";
+import "./cutroom.css";
 
 const fontSans = Geist({
   variable: "--font-sans",
@@ -19,42 +19,19 @@ const fontMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const fontSerif = Fraunces({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  axes: ["opsz", "SOFT", "WONK"],
-});
-
-// Used only within the ".ap-scope" design system (marketing, auth, and
-// dashboard screens) — see app/ap-design.css. Added alongside the existing
-// fonts rather than replacing them so the rest of the app (project/editor
-// screens, not covered by this design handoff) is unaffected.
-const fontArchivo = Archivo({
-  variable: "--font-archivo",
-  subsets: ["latin"],
-  weight: ["500", "700", "900"],
-});
-
-const fontOnest = Onest({
-  variable: "--font-onest",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
-
 export const metadata: Metadata = {
   title: {
-    default: "After Party — Turn hundreds of photos into the perfect post",
-    template: "%s · After Party",
+    default: "CutRoom — Social packaging for creator agencies",
+    template: "%s · CutRoom",
   },
   description:
-    "After Party uses AI to find the photos worth posting, build your carousel, write your caption, and finish the look.",
+    "Drop the shoot folder. Get on-brand selects, platform crops, and client-voice captions — ready for Buffer.",
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fbfaf8" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0b0a" },
+    { media: "(prefers-color-scheme: light)", color: "#F4F5F8" },
+    { media: "(prefers-color-scheme: dark)", color: "#222326" },
   ],
 };
 
@@ -63,13 +40,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${fontSans.variable} ${fontMono.variable} ${fontSerif.variable} ${fontArchivo.variable} ${fontOnest.variable} h-full antialiased`}
+      className={`${fontSans.variable} ${fontMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <TooltipProvider delayDuration={150}>

@@ -70,7 +70,7 @@ export async function createOrgForUser(
   const org = await createOrganizationRow({
     name: data.name,
     slug,
-    planId: "studio",
+    planId: data.planId ?? "studio",
   });
 
   await createMembershipRow({
