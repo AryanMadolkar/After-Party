@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { requireSessionUser } from "@/components/layout/auth-gate";
 import { listCurrentMemberships } from "@/lib/auth/tenancy";
@@ -48,6 +49,12 @@ export default async function SettingsPage() {
           Sign out
         </button>
       </form>
+
+      <div style={{ marginTop: 16 }}>
+        <Link href="/app/settings/billing" className="cr-btn cr-btn-ghost" style={{ paddingLeft: 0 }}>
+          Billing &amp; plans →
+        </Link>
+      </div>
     </div>
   );
 }

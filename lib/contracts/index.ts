@@ -1,7 +1,11 @@
 export {
   PlanIdEnum,
   PlanLimitCodeEnum,
+  PlanLimitsSchema,
   PLAN_LIMITS,
+  getPlanLimits,
+  PlanLimitError,
+  isPlanLimitError,
   type PlanId,
   type PlanLimitCode,
   type PlanLimits,
@@ -62,3 +66,22 @@ export {
   type AllowedMime,
   type SelectTargetChannel,
 } from "./limits";
+
+export {
+  ClientStatusEnum,
+  ClientSchema,
+  CreateClientInput,
+  UpdateClientInput,
+  CaptionLanguagesSchema,
+  BrandKitSchema,
+  UpdateBrandKitInput,
+  BrandKitWarningCodeEnum,
+  BrandKitCompletenessSchema,
+  computeBrandKitCompleteness,
+  type ClientStatus,
+  type Client,
+  type CaptionLanguages,
+  type BrandKit,
+  type BrandKitWarningCode,
+  type BrandKitCompleteness,
+} from "./client";

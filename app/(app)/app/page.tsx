@@ -35,7 +35,7 @@ export default function AppHomePage() {
           </div>
           <div style={{ fontWeight: 650, fontSize: 15 }}>Create your first client</div>
           <p className="cr-muted" style={{ margin: "8px 0 0", fontSize: 13, lineHeight: 1.45 }}>
-            Lock the brand kit — CRUD lands next.
+            Lock the brand kit — identity, voice, guardrails, EN/HI.
           </p>
         </Link>
         <Link href="/app/shoots" className="cr-card" style={{ padding: 16, display: "block" }}>

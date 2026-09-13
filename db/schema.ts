@@ -55,6 +55,8 @@ export const membershipRoleEnum = pgEnum("membership_role", [
   "editor",
 ]);
 
+export const clientStatusEnum = pgEnum("client_status", ["active", "archived"]);
+
 // ---------------------------------------------------------------------------
 // users
 // ---------------------------------------------------------------------------
@@ -166,8 +168,7 @@ export const memberships = pgTable(
 );
 
 /**
- * Stub client rows — CRUD lands in Solo-P4. Present now so brand_kits and
- * later tenant tables can take a stable FK.
+ * Agency clients — brand-ops workspace tenants under an org.
  */
 export const clients = pgTable(
   "clients",
@@ -177,17 +178,22 @@ export const clients = pgTable(
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
+    slug: text("slug").notNull(),
+    status: clientStatusEnum("status").notNull().default("active"),
+    externalRef: text("external_ref"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
+    uniqueIndex("clients_org_slug_idx").on(table.orgId, table.slug),
     index("clients_org_id_idx").on(table.orgId),
+    index("clients_status_idx").on(table.status),
     index("clients_created_at_idx").on(table.createdAt),
   ],
 );
 
 /**
- * Stub brand kit rows — CRUD lands in Solo-P4.
+ * Brand kit — 1:1 with client. Feeds scoring/captions in later slices.
  */
 export const brandKits = pgTable(
   "brand_kits",
@@ -199,7 +205,20 @@ export const brandKits = pgTable(
     clientId: uuid("client_id")
       .notNull()
       .references(() => clients.id, { onDelete: "cascade" }),
-    name: text("name").notNull().default("Default"),
+    primaryColor: text("primary_color"),
+    secondaryColors: jsonb("secondary_colors").$type<string[]>().notNull().default([]),
+    logoBlobKey: text("logo_blob_key"),
+    voiceNotes: text("voice_notes"),
+    dos: jsonb("dos").$type<string[]>().notNull().default([]),
+    donts: jsonb("donts").$type<string[]>().notNull().default([]),
+    sampleCaptions: jsonb("sample_captions").$type<string[]>().notNull().default([]),
+    captionLanguages: jsonb("caption_languages")
+      .$type<Array<"en" | "hi">>()
+      .notNull()
+      .default(["en"]),
+    forbiddenTopics: jsonb("forbidden_topics").$type<string[]>().notNull().default([]),
+    mustIncludeHints: jsonb("must_include_hints").$type<string[]>().notNull().default([]),
+    updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -668,6 +687,7 @@ export type CaptionStyle = (typeof captionStyleEnum.enumValues)[number];
 export type OAuthProvider = (typeof oauthProviderEnum.enumValues)[number];
 export type PlanIdColumn = (typeof planIdEnum.enumValues)[number];
 export type MembershipRoleColumn = (typeof membershipRoleEnum.enumValues)[number];
+export type ClientStatusColumn = (typeof clientStatusEnum.enumValues)[number];
 export type ProcessingJobTypeColumn = (typeof processingJobTypeEnum.enumValues)[number];
 export type ProcessingJobStatusColumn = (typeof processingJobStatusEnum.enumValues)[number];
 /** A post's type mirrors selection type — see the `posts.type` column comment. */

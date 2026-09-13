@@ -16,7 +16,7 @@ describe("lib/contracts", () => {
     expect(RoleEnum.options).toEqual(["owner", "producer", "editor"]);
   });
 
-  it("exposes PLAN_LIMITS stub ceilings", () => {
+  it("exposes PLAN_LIMITS §19.1 ceilings", () => {
     expect(PLAN_LIMITS.studio).toEqual({ clients: 3, seats: 2, images: 2_000 });
     expect(PLAN_LIMITS.agency).toEqual({ clients: 15, seats: 5, images: 15_000 });
     expect(PLAN_LIMITS.agency_plus).toEqual({ clients: 40, seats: 15, images: 50_000 });

@@ -43,6 +43,13 @@
       "when": 1789196664871,
       "tag": "0005_processing_jobs",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789300000000,
+      "tag": "0006_clients_brand_kit",
+      "breakpoints": true
     }
   ]
 }

@@ -1,19 +1,27 @@
 import type { Metadata } from "next";
 
+import { ClientsList } from "@/components/clients/clients-list";
+import { listClients } from "@/lib/clients/service";
+
 export const metadata: Metadata = {
   title: "Clients",
 };
 
-export default function ClientsPage() {
+export default async function ClientsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ archived?: string }>;
+}) {
+  const params = await searchParams;
+  const includeArchived = params.archived === "1";
+  const { clients, activeCount, limit } = await listClients({ includeArchived });
+
   return (
-    <div style={{ maxWidth: 720 }}>
-      <h1 style={{ margin: 0, fontSize: 28, letterSpacing: "-0.03em", fontWeight: 700 }}>Clients</h1>
-      <p className="cr-muted" style={{ margin: "8px 0 0", fontSize: 15 }}>
-        Create your first client — brand kits and CRUD ship in Solo-P4.
-      </p>
-      <button type="button" className="cr-btn cr-btn-primary" style={{ marginTop: 20 }} disabled>
-        Create client (soon)
-      </button>
-    </div>
+    <ClientsList
+      clients={clients}
+      activeCount={activeCount}
+      limit={limit}
+      includeArchived={includeArchived}
+    />
   );
 }
